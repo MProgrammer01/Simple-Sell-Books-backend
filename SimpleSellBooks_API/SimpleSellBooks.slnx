@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../SimpleSellBooks_BusinessLayer/SimpleSellBooks_BusinessLayer.csproj" />
+  <Project Path="../SimpleSellBooks_DataLayer/SimpleSellBooks_DataLayer.csproj" />
+  <Project Path="SimpleSellBooks_API.csproj" />
+</Solution>

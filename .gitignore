@@ -1,0 +1,38 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build
+bin/
+obj/
+
+# Rider
+.idea/
+
+# VS Code (اختياري إذا ما بغيتيش تشارك الإعدادات)
+.vscode/
+
+# Logs
+*.log
+
+# NuGet
+packages/
+*.nupkg
+
+# Publish
+publish/
+
+# Test Results
+TestResults/
+
+# Local database files
+*.mdf
+*.ldf
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
