@@ -12,13 +12,13 @@ namespace SimpleSellBooks_DataLayer.categories
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 
-        public static IEnumerable<clsCategorieDTO> GetAllcategories()
+        public static IEnumerable<clsCategorieDTO> GetAllCategories()
         {
             List<clsCategorieDTO> listCategories = new List<clsCategorieDTO>();
 
-            string SP_GetAllCategorie = "SP_GetAllCategorie";
+            string SP_GetAllCategories = "SP_GetAllCategories";
 
-            SqlCommand command = new SqlCommand(SP_GetAllCategorie, connectionToDB);
+            SqlCommand command = new SqlCommand(SP_GetAllCategories, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
 
@@ -74,20 +74,20 @@ namespace SimpleSellBooks_DataLayer.categories
 
                 if (reader.Read())
                 {
-                    int categoryID = (int)reader["categoryID"];
+                    categoryID = (int)reader["categoryID"];
                     string categoryName = (string)reader["categoryName"];
                     string categoryDescription = (string)reader["categoryDescription"];
                     DateTime createdAt = (DateTime)reader["createdAt"];
                     DateTime updatedAt = (DateTime)reader["updatedAt"];
 
-                    categorieDTO = new clscategorieDTO(categoryID, categoryName, categoryDescription, createdAt, updatedAt);
+                    categorieDTO = new clsCategorieDTO(categoryID, categoryName, categoryDescription, createdAt, updatedAt);
                 }
 
                 reader.Close();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error GetcategorieBycategoryID Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error GetCategorieByID Data " + ex.Message);
             }
             finally
             {

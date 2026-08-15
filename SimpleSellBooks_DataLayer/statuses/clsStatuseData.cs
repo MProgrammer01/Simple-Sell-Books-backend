@@ -71,17 +71,17 @@ namespace SimpleSellBooks_DataLayer.statuses
 
                 if (reader.Read())
                 {
-                    int statusID = (int)reader["statusID"];
+                    statusID = (int)reader["statusID"];
                     string statusName = (string)reader["statusName"];
 
-                    statuseDTO = new clsstatuseDTO(statusID, statusName);
+                    statuseDTO = new clsStatuseDTO(statusID, statusName);
                 }
 
                 reader.Close();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error GetstatuseBystatusID Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error GetStatuseByID Data " + ex.Message);
             }
             finally
             {
