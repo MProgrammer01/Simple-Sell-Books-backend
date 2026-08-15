@@ -12,7 +12,7 @@ namespace SimpleSellBooks_DataLayer.conditions
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 
-        public static IEnumerable<clsConditionDTO> GetAllconditions()
+        public static IEnumerable<clsConditionDTO> GetAllConditions()
         {
             List<clsConditionDTO> listConditions = new List<clsConditionDTO>();
 
@@ -72,17 +72,17 @@ namespace SimpleSellBooks_DataLayer.conditions
 
                 if (reader.Read())
                 {
-                    int conditionID = (int)reader["conditionID"];
+                    conditionID = (int)reader["conditionID"];
                     string conditionName = (string)reader["conditionName"];
 
-                    conditionDTO = new clsconditionDTO(conditionID, conditionName);
+                    conditionDTO = new clsConditionDTO(conditionID, conditionName);
                 }
 
                 reader.Close();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error GetconditionByconditionID Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error GetConditionByID Data " + ex.Message);
             }
             finally
             {

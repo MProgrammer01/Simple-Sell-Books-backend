@@ -1,8 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
@@ -31,26 +34,25 @@ namespace SimpleSellBooks_DataLayer.books
 
                 while (reader.Read())
                 {
-                    clsBookDTO book = new clsBookDTO
-                    {
-                        BookId = Convert.ToInt32(reader["bookID"]),
-                        SellerId = Convert.ToInt32(reader["sellerID"]),
-                        CategoryId = Convert.ToInt32(reader["categoryID"]),
-                        Title = reader.GetString(reader.GetOrdinal("title")),
-                        Author = reader.GetString(reader.GetOrdinal("author")),
-                        BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
-                                            reader["bookDescription"].ToString(),
-                        Price = Convert.ToDecimal(reader["price"]),
-                        Stock = Convert.ToInt32(reader["stock"]),
-                        ConditionId = Convert.ToInt32(reader["conditionID"]),
-                        CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
-                                            reader["coverImg"].ToString(),
-                        StatusId = Convert.ToInt32(reader["statusID"]),
-                        CreatedAt = Convert.ToDateTime(reader["createdAt"]),
-                        UpdatedAt = Convert.ToDateTime(reader["updatedAt"]),
-                    };
+                    int BookId = (int)reader["bookID"];
+                    int SellerId = (int)reader["sellerID"];
+                    int CategoryId = (int)reader["categoryID"];
+                    string Title = (string)reader["title"];
+                    string Author = (string)reader["author"];
+                    string? BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
+                                           (string)reader["bookDescription"];
+                    decimal Price = (decimal)reader["price"];
+                    int Stock = (int)reader["stock"];
+                    int ConditionId = (int)reader["conditionID"];
+                    string? CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
+                                            (string)reader["coverImg"];
+                    int StatusId = (int)reader["statusID"];
+                    DateTime CreatedAt = (DateTime)reader["createdAt"];
+                    DateTime UpdatedAt = (DateTime)reader["updatedAt"];
 
-                    booksList.Add(book);
+                    booksList.Add(new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                        BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
+                
                 }
                 reader.Close();
             }
@@ -213,24 +215,24 @@ namespace SimpleSellBooks_DataLayer.books
 
                 if (reader.Read())
                 {
-                    bookDTO = new clsBookDTO
-                    {
-                        BookId = Convert.ToInt32(reader["bookID"]),
-                        SellerId = Convert.ToInt32(reader["sellerID"]),
-                        CategoryId = Convert.ToInt32(reader["categoryID"]),
-                        Title = reader.GetString(reader.GetOrdinal("title")),
-                        Author = reader.GetString(reader.GetOrdinal("author")),
-                        BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
-                                            reader["bookDescription"].ToString(),
-                        Price = Convert.ToDecimal(reader["price"]),
-                        Stock = Convert.ToInt32(reader["stock"]),
-                        ConditionId = Convert.ToInt32(reader["conditionID"]),
-                        CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
-                                            reader["coverImg"].ToString(),
-                        StatusId = Convert.ToInt32(reader["statusID"]),
-                        CreatedAt = Convert.ToDateTime(reader["createdAt"]),
-                        UpdatedAt = Convert.ToDateTime(reader["updatedAt"]),
-                    };
+                    int BookId = (int)reader["bookID"];
+                    int SellerId = (int)reader["sellerID"];
+                    int CategoryId = (int)reader["categoryID"];
+                    string Title = (string)reader["title"];
+                    string Author = (string)reader["author"];
+                    string? BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
+                                           (string)reader["bookDescription"];
+                    decimal Price = (decimal)reader["price"];
+                    int Stock = (int)reader["stock"];
+                    int ConditionId = (int)reader["conditionID"];
+                    string? CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
+                                            (string)reader["coverImg"];
+                    int StatusId = (int)reader["statusID"];
+                    DateTime CreatedAt = (DateTime)reader["createdAt"];
+                    DateTime UpdatedAt = (DateTime)reader["updatedAt"];
+
+                    bookDTO = new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                        BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt);
                 }
 
                 reader.Close();

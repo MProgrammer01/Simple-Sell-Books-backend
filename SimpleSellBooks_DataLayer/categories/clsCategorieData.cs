@@ -32,7 +32,8 @@ namespace SimpleSellBooks_DataLayer.categories
                     {
                         int categoryID = (int)reader["categoryID"];
                         string categoryName = (string)reader["categoryName"];
-                        string categoryDescription = (string)reader["categoryDescription"];
+                        string? categoryDescription = reader.IsDBNull(reader.GetOrdinal("categoryDescription")) ? null :
+                                            (string)reader["categoryDescription"];
                         DateTime createdAt = (DateTime)reader["createdAt"];
                         DateTime updatedAt = (DateTime)reader["updatedAt"];
 
@@ -76,7 +77,8 @@ namespace SimpleSellBooks_DataLayer.categories
                 {
                     categoryID = (int)reader["categoryID"];
                     string categoryName = (string)reader["categoryName"];
-                    string categoryDescription = (string)reader["categoryDescription"];
+                    string? categoryDescription = reader.IsDBNull(reader.GetOrdinal("categoryDescription")) ? null :
+                                            (string)reader["categoryDescription"];
                     DateTime createdAt = (DateTime)reader["createdAt"];
                     DateTime updatedAt = (DateTime)reader["updatedAt"];
 
