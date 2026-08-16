@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.statuses
 {
-    internal class clsStatuseData
+    public class clsStatuseData
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 

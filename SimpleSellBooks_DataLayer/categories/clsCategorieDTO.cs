@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.categories
 {
-    internal class clsCategorieDTO
+    public class clsCategorieDTO
     {
         public int categoryID { get; set; }
         public string categoryName { get; set; }

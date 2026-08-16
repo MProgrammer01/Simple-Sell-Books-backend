@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.categories
 {
-    internal class clsCategorieData
+    public class clsCategorieData
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 

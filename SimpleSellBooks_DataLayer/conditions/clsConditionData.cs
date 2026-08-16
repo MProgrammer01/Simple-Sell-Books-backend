@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.conditions
 {
-    internal class clsConditionData
+    public class clsConditionData
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 

@@ -12,7 +12,7 @@ using static System.Net.WebRequestMethods;
 
 namespace SimpleSellBooks_DataLayer.books
 {
-    internal class clsBookData
+    public class clsBookData
     {
         static SqlConnection connectionToDB = new SqlConnection(clsConnectToDB.ConnectionToDB);
 
@@ -77,17 +77,17 @@ namespace SimpleSellBooks_DataLayer.books
             SqlCommand command = new SqlCommand(SP_AddNewBook, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@sellerID", bookDTO.SellerId);
-            command.Parameters.AddWithValue("@categoryID", bookDTO.CategoryId);
-            command.Parameters.AddWithValue("@title", bookDTO.Title);
-            command.Parameters.AddWithValue("@author", bookDTO.Author);
-            command.Parameters.AddWithValue("@bookDescription", bookDTO.BookDescription ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@price", bookDTO.Price);
-            command.Parameters.AddWithValue("@stock", bookDTO.Stock);
-            command.Parameters.AddWithValue("@conditionID", bookDTO.ConditionId);
-            command.Parameters.AddWithValue("@coverImg", bookDTO.CoverImg ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@statusID", bookDTO.StatusId);
-            command.Parameters.AddWithValue("@createdAt", bookDTO.CreatedAt);
+            command.Parameters.AddWithValue("@sellerID", bookDTO.sellerId);
+            command.Parameters.AddWithValue("@categoryID", bookDTO.categoryId);
+            command.Parameters.AddWithValue("@title", bookDTO.title);
+            command.Parameters.AddWithValue("@author", bookDTO.author);
+            command.Parameters.AddWithValue("@bookDescription", bookDTO.bookDescription ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@price", bookDTO.price);
+            command.Parameters.AddWithValue("@stock", bookDTO.stock);
+            command.Parameters.AddWithValue("@conditionID", bookDTO.conditionId);
+            command.Parameters.AddWithValue("@coverImg", bookDTO.coverImg ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@statusID", bookDTO.statusId);
+            command.Parameters.AddWithValue("@createdAt", bookDTO.createdAt);
             command.Parameters.AddWithValue("@updatedAt", bookDTO.UpdatedAt);
             var outputIdParam = new SqlParameter("@NewBookID", SqlDbType.Int)
             {
@@ -129,18 +129,18 @@ namespace SimpleSellBooks_DataLayer.books
             command.CommandType = CommandType.StoredProcedure;
 
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@bookID", bookDTO.BookId);
-            command.Parameters.AddWithValue("@sellerID", bookDTO.SellerId);
-            command.Parameters.AddWithValue("@categoryID", bookDTO.CategoryId);
-            command.Parameters.AddWithValue("@title", bookDTO.Title);
-            command.Parameters.AddWithValue("@author", bookDTO.Author);
-            command.Parameters.AddWithValue("@bookDescription", bookDTO.BookDescription ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@price", bookDTO.Price);
-            command.Parameters.AddWithValue("@stock", bookDTO.Stock);
-            command.Parameters.AddWithValue("@conditionID", bookDTO.ConditionId);
-            command.Parameters.AddWithValue("@coverImg", bookDTO.CoverImg ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@statusID", bookDTO.StatusId);
-            command.Parameters.AddWithValue("@createdAt", bookDTO.CreatedAt);
+            command.Parameters.AddWithValue("@bookID", bookDTO.bookId);
+            command.Parameters.AddWithValue("@sellerID", bookDTO.sellerId);
+            command.Parameters.AddWithValue("@categoryID", bookDTO.categoryId);
+            command.Parameters.AddWithValue("@title", bookDTO.title);
+            command.Parameters.AddWithValue("@author", bookDTO.author);
+            command.Parameters.AddWithValue("@bookDescription", bookDTO.bookDescription ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@price", bookDTO.price);
+            command.Parameters.AddWithValue("@stock", bookDTO.stock);
+            command.Parameters.AddWithValue("@conditionID", bookDTO.conditionId);
+            command.Parameters.AddWithValue("@coverImg", bookDTO.coverImg ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@statusID", bookDTO.statusId);
+            command.Parameters.AddWithValue("@createdAt", bookDTO.createdAt);
             command.Parameters.AddWithValue("@updatedAt", bookDTO.UpdatedAt);
 
             try

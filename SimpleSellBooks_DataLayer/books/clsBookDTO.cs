@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.books
 {
-    internal class clsBookDTO
+    public class clsBookDTO
     {
-        public int BookId { get; set; }
-        public int SellerId { get; set; }
-        public int CategoryId { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string? BookDescription { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
-        public int ConditionId { get; set; }
-        public string? CoverImg { get; set; }
-        public int StatusId { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public int bookId { get; set; }
+        public int sellerId { get; set; }
+        public int categoryId { get; set; }
+        public string title { get; set; }
+        public string author { get; set; }
+        public string? bookDescription { get; set; }
+        public decimal price { get; set; }
+        public int stock { get; set; }
+        public int conditionId { get; set; }
+        public string? coverImg { get; set; }
+        public int statusId { get; set; }
+        public DateTime createdAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
 
         public clsBookDTO() {
-            Title = string.Empty;
-            Author = string.Empty;
+            title = string.Empty;
+            author = string.Empty;
         }
 
         //DTO Retrive Data
@@ -37,18 +37,18 @@ namespace SimpleSellBooks_DataLayer.books
             string? coverImg, int statusId, DateTime createdAt, 
             DateTime updatedAt)
         {
-            BookId = bookID;
-            SellerId = sellerId;
-            CategoryId = categoryId;
-            Title = title;
-            Author = author;
-            BookDescription = description;
-            Price = price;
-            Stock = stock;
-            ConditionId = conditionId;
-            CoverImg = coverImg;
-            StatusId = statusId;
-            CreatedAt = createdAt;
+            bookId = bookID;
+            this.sellerId = sellerId;
+            this.categoryId = categoryId;
+            this.title = title;
+            this.author = author;
+            bookDescription = description;
+            this.price = price;
+            this.stock = stock;
+            this.conditionId = conditionId;
+            this.coverImg = coverImg;
+            this.statusId = statusId;
+            this.createdAt = createdAt;
             UpdatedAt = updatedAt;
         }
 
@@ -58,16 +58,16 @@ namespace SimpleSellBooks_DataLayer.books
             string? description, decimal price, int stock, int conditionId,
             string? coverImg, int statusId)
         {
-            SellerId = sellerId;
-            CategoryId = categoryId;
-            Title = title;
-            Author = author;
-            BookDescription = description;
-            Price = price;
-            Stock = stock;
-            ConditionId = conditionId;
-            CoverImg = coverImg;
-            StatusId = statusId;
+            this.sellerId = sellerId;
+            this.categoryId = categoryId;
+            this.title = title;
+            this.author = author;
+            this.bookDescription = description;
+            this.price = price;
+            this.stock = stock;
+            this.conditionId = conditionId;
+            this.coverImg = coverImg;
+            this.statusId = statusId;
         }
 
         //DTO Update
@@ -76,18 +76,18 @@ namespace SimpleSellBooks_DataLayer.books
             string? description, decimal price, int stock, int conditionId,
             string? coverImg, int statusId, DateTime updatedAt)
         {
-            BookId = bookID;
-            SellerId = sellerId;
-            CategoryId = categoryId;
-            Title = title;
-            Author = author;
-            BookDescription = description;
-            Price = price;
-            Stock = stock;
-            ConditionId = conditionId;
-            CoverImg = coverImg;
-            StatusId = statusId;
-            UpdatedAt = updatedAt;
+            bookId = bookID;
+            this.sellerId = sellerId;
+            this.categoryId = categoryId;
+            this.title = title;
+            this.author = author;
+            this.bookDescription = description;
+            this.price = price;
+            this.stock = stock;
+            this.conditionId = conditionId;
+            this.coverImg = coverImg;
+            this.statusId = statusId;
+            this.UpdatedAt = updatedAt;
         }
     }
 }

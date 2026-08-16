@@ -14,4 +14,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleSellBooks_BusinessLayer\SimpleSellBooks_BusinessLayer.csproj" />
+  </ItemGroup>
+
 </Project>

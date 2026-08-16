@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.statuses
 {
-    internal class clsStatuseDTO
+    public class clsStatuseDTO
     {
         public int statusID { get; set; }
         public string statusName { get; set; }

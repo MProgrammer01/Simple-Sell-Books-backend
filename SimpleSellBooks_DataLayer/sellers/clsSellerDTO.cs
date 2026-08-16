@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.sellers
 {
-    internal class clsSellerDTO
+    public class clsSellerDTO
     {
         public int sellerID { get; set; }
         public int personID { get; set; }
@@ -19,6 +19,7 @@ namespace SimpleSellBooks_DataLayer.sellers
             storeName = string.Empty;
         }
 
+        //retrive and add new
         public clsSellerDTO(int sellerID, int personID, string storeName, string? logoStore)
         {
             this.sellerID = sellerID;
@@ -32,7 +33,7 @@ namespace SimpleSellBooks_DataLayer.sellers
         public clsSellerDTO(int sellerID, string storeName, string? logoStore)
         {
             this.sellerID = sellerID;
-            this.personID = personID;
+            //this.personID = personID;
             this.storeName = storeName;
             this.logoStore = logoStore;
 

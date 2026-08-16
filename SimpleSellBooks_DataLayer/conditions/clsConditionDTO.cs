@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.conditions
 {
-    internal class clsConditionDTO
+    public class clsConditionDTO
     {
         public int conditionID { get; set; }
         public string conditionName { get; set; }

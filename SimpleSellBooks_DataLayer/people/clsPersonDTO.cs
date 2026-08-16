@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_DataLayer.people
 {
-    internal class clsPersonDTO
+    public class clsPersonDTO
     {
         public int personID { get; set; }
         public string fullName { get; set; }
@@ -14,7 +14,7 @@ namespace SimpleSellBooks_DataLayer.people
         public string passwordHash { get; set; }
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
-        public bool isAdmin { get; set; }
+        //public bool isAdmin { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
 
