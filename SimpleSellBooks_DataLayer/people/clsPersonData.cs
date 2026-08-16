@@ -177,7 +177,7 @@ namespace SimpleSellBooks_DataLayer.people
             return isDeleted;
         }
 
-        public static clsPersonDTO GetPersonBypersonID(int personID)
+        public static clsPersonDTO GetPersonByID(int personID)
         {
             clsPersonDTO personDTO = new clsPersonDTO();
 
