@@ -56,7 +56,7 @@ namespace SimpleSellBooks_DataLayer.people
 
         //Update Person
         public clsPersonDTO(int personID, string fullName, string email, string? phone, 
-            string? addressPerson, DateTime updatedAt)
+            string? addressPerson)
         {
             this.personID = personID;
             this.fullName = fullName;
@@ -64,7 +64,6 @@ namespace SimpleSellBooks_DataLayer.people
             this.passwordHash = string.Empty;
             this.phone = phone;
             this.addressPerson = addressPerson;
-            this.updatedAt = updatedAt;
 
         }
 

@@ -16,7 +16,7 @@ namespace SimpleSellBooks_BusinessLayer.statuses
         public string statusName { get; set; }
 
 
-        clsStatuseDTO statuseDTO
+        public clsStatuseDTO statuseDTO
         {
             get
             {

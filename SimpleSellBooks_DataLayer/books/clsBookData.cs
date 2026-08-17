@@ -87,8 +87,6 @@ namespace SimpleSellBooks_DataLayer.books
             command.Parameters.AddWithValue("@conditionID", bookDTO.conditionId);
             command.Parameters.AddWithValue("@coverImg", bookDTO.coverImg ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@statusID", bookDTO.statusId);
-            command.Parameters.AddWithValue("@createdAt", bookDTO.createdAt);
-            command.Parameters.AddWithValue("@updatedAt", bookDTO.UpdatedAt);
             var outputIdParam = new SqlParameter("@NewBookID", SqlDbType.Int)
             {
                 Direction = ParameterDirection.Output
@@ -140,8 +138,6 @@ namespace SimpleSellBooks_DataLayer.books
             command.Parameters.AddWithValue("@conditionID", bookDTO.conditionId);
             command.Parameters.AddWithValue("@coverImg", bookDTO.coverImg ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@statusID", bookDTO.statusId);
-            command.Parameters.AddWithValue("@createdAt", bookDTO.createdAt);
-            command.Parameters.AddWithValue("@updatedAt", bookDTO.UpdatedAt);
 
             try
             {

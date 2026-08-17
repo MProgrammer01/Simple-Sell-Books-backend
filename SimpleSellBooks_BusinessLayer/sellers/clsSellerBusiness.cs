@@ -21,7 +21,7 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         public clsPersonBusiness personInfo;
 
 
-        clsSellerDTO sellerDTO
+        public clsSellerDTO sellerDTO
         {
             get
             {

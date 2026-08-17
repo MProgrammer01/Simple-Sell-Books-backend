@@ -19,7 +19,7 @@ namespace SimpleSellBooks_BusinessLayer.categories
         public DateTime updatedAt { get; set; }
 
 
-        clsCategorieDTO categorieDTO
+        public clsCategorieDTO categorieDTO
         {
             get
             {

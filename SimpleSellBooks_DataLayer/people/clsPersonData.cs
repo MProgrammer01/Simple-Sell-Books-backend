@@ -121,7 +121,6 @@ namespace SimpleSellBooks_DataLayer.people
             command.Parameters.AddWithValue("@email", personDTO.email);
             command.Parameters.AddWithValue("@phone", personDTO.phone ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@addressPerson", personDTO.addressPerson ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@updatedAt", personDTO.updatedAt);
 
 
             try

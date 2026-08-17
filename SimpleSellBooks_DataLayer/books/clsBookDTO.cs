@@ -74,7 +74,7 @@ namespace SimpleSellBooks_DataLayer.books
         public clsBookDTO(int bookID, int sellerId,
             int categoryId, string title, string author,
             string? description, decimal price, int stock, int conditionId,
-            string? coverImg, int statusId, DateTime updatedAt)
+            string? coverImg, int statusId)
         {
             bookId = bookID;
             this.sellerId = sellerId;
@@ -87,7 +87,6 @@ namespace SimpleSellBooks_DataLayer.books
             this.conditionId = conditionId;
             this.coverImg = coverImg;
             this.statusId = statusId;
-            this.UpdatedAt = updatedAt;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SimpleSellBooks_BusinessLayer.conditions
         public string conditionName { get; set; }
 
 
-        clsConditionDTO conditionDTO
+        public clsConditionDTO conditionDTO
         {
             get
             {

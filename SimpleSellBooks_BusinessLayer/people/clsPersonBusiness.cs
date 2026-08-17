@@ -22,18 +22,18 @@ namespace SimpleSellBooks_BusinessLayer.people
         public DateTime updatedAt { get; set; }
 
 
-        clsPersonDTO personDTO
+        public clsPersonDTO personDTO
         {
             get
             {
                 return new clsPersonDTO(
                     this.personID,
-                this.fullName,
-                this.email,
-                this.phone,
-                this.addressPerson,
-                this.createdAt,
-                this.updatedAt);
+                    this.fullName,
+                    this.email,
+                    this.phone,
+                    this.addressPerson,
+                    this.createdAt,
+                    this.updatedAt);
             }
         }
 
@@ -42,13 +42,11 @@ namespace SimpleSellBooks_BusinessLayer.people
             get
             {
                 return new clsPersonDTO(
-                    this.personID,
                 this.fullName,
                 this.email,
+                this.passwordHash,
                 this.phone,
-                this.addressPerson,
-                this.createdAt,
-                this.updatedAt);
+                this.addressPerson);
             }
         }
 
@@ -61,8 +59,7 @@ namespace SimpleSellBooks_BusinessLayer.people
                 this.fullName,
                 this.email,
                 this.phone,
-                this.addressPerson,
-                this.updatedAt);
+                this.addressPerson);
             }
         }
 

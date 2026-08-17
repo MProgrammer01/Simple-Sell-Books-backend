@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_BusinessLayer.books
 {
-    internal class clsBookBusiness
+    public class clsBookBusiness
     {
         enum enMode { AddNewBook = 1, UpdateBook = 2 }
         enMode Mode = enMode.AddNewBook;
@@ -38,7 +38,7 @@ namespace SimpleSellBooks_BusinessLayer.books
         public clsStatuseBusiness statuseInfo;
 
 
-        private clsBookDTO bookDTO
+        public clsBookDTO bookDTO
         {
             get
             {
@@ -55,7 +55,8 @@ namespace SimpleSellBooks_BusinessLayer.books
         {
             get
             {
-                return new clsBookDTO(this.sellerId,
+                return new clsBookDTO(
+                    this.sellerId,
                     this.categoryId,
                     this.title,
                     this.author,
@@ -83,8 +84,7 @@ namespace SimpleSellBooks_BusinessLayer.books
                     this.stock,
                     this.conditionId,
                     this.coverImg,
-                    this.statusId,
-                    this.UpdatedAt);
+                    this.statusId);
             }
         }
 
