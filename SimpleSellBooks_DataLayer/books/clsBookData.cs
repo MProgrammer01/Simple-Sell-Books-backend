@@ -122,13 +122,13 @@ namespace SimpleSellBooks_DataLayer.books
 
             string SP_UpdateBook = "SP_UpdateBook";
 
+            System.Diagnostics.Debug.WriteLine($"bookId : {bookDTO.bookId}");
+
             SqlCommand command = new SqlCommand(SP_UpdateBook, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
 
-            command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@bookID", bookDTO.bookId);
-            command.Parameters.AddWithValue("@sellerID", bookDTO.sellerId);
             command.Parameters.AddWithValue("@categoryID", bookDTO.categoryId);
             command.Parameters.AddWithValue("@title", bookDTO.title);
             command.Parameters.AddWithValue("@author", bookDTO.author);
@@ -143,9 +143,11 @@ namespace SimpleSellBooks_DataLayer.books
             {
                 connectionToDB.Open();
                 int rowsAffected = command.ExecuteNonQuery();
+                System.Diagnostics.Debug.WriteLine($"rowsAffected : {rowsAffected}");
                 if (rowsAffected > 0)
                 {
                     isUpdated = true;
+                    System.Diagnostics.Debug.WriteLine($"isUpdated : {isUpdated}");
                 }
 
             }
@@ -157,6 +159,7 @@ namespace SimpleSellBooks_DataLayer.books
             {
                 connectionToDB.Close();
             }
+            System.Diagnostics.Debug.WriteLine($"isUpdated : {isUpdated}");
             return isUpdated;
         }
 

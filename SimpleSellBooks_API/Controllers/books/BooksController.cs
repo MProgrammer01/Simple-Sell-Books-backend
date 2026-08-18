@@ -97,7 +97,7 @@ namespace SimpleSellBooks_API.Controllers.books
                 return BadRequest($"Not accepted ID {id}");
             }
 
-            if (updatedBookDTO == null || updatedBookDTO.sellerId < 0 ||
+            if (updatedBookDTO == null ||
                 updatedBookDTO.categoryId < 0 || string.IsNullOrEmpty(updatedBookDTO.title) ||
                 string.IsNullOrEmpty(updatedBookDTO.author) || updatedBookDTO.price < 0 ||
                 updatedBookDTO.stock < 0 || updatedBookDTO.conditionId < 0 || updatedBookDTO.statusId < 0)
@@ -111,8 +111,7 @@ namespace SimpleSellBooks_API.Controllers.books
             {
                 return NotFound($"Book with ID {id} not found.");
             }
-
-            book.sellerId = updatedBookDTO.sellerId;
+            
             book.categoryId = updatedBookDTO.categoryId;
             book.title = updatedBookDTO.title;
             book.author = updatedBookDTO.author;

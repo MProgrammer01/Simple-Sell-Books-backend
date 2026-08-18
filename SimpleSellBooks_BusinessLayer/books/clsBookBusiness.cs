@@ -74,8 +74,8 @@ namespace SimpleSellBooks_BusinessLayer.books
         {
             get
             {
-                return new clsBookDTO(bookId,
-                    this.sellerId,
+                return new clsBookDTO(
+                    this.bookId,
                     this.categoryId,
                     this.title,
                     this.author,
@@ -84,7 +84,8 @@ namespace SimpleSellBooks_BusinessLayer.books
                     this.stock,
                     this.conditionId,
                     this.coverImg,
-                    this.statusId);
+                    this.statusId, 
+                    0);
             }
         }
 
@@ -114,6 +115,7 @@ namespace SimpleSellBooks_BusinessLayer.books
 
         clsBookBusiness(clsBookDTO bookDTO)
         {
+            
             this.bookId = bookDTO.bookId;
             this.sellerId = bookDTO.sellerId;
             this.categoryId = bookDTO.categoryId;
@@ -148,6 +150,7 @@ namespace SimpleSellBooks_BusinessLayer.books
 
             if (bookDTO != null && bookDTO.bookId > 0)
             {
+                
                 return new clsBookBusiness(bookDTO);
             }
             return null;

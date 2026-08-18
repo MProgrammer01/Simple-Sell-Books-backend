@@ -11,17 +11,17 @@ namespace SimpleSellBooks_API.Controllers.people
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        [HttpGet("All", Name = "GetAllPersons")]
+        [HttpGet("All", Name = "GetAllPeople")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<IEnumerable<clsPersonDTO>> GetAllPersons()
+        public ActionResult<IEnumerable<clsPersonDTO>> GetAllPeople()
         {
             IEnumerable<clsPersonDTO> personList = clsPersonBusiness.GetAllPersons();
 
             if (!personList.Any())
             {
-                return NotFound("No Persons Found!");
+                return NotFound("No People Found!");
             }
 
             return Ok(personList);

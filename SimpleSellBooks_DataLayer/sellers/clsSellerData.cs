@@ -62,7 +62,6 @@ namespace SimpleSellBooks_DataLayer.sellers
             string SP_AddNewSeller = "SP_AddNewSeller";
             SqlCommand command = new SqlCommand(SP_AddNewSeller, connectionToDB);
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@sellerID", sellerDTO.sellerID);
             command.Parameters.AddWithValue("@personID", sellerDTO.personID);
             command.Parameters.AddWithValue("@storeName", sellerDTO.storeName);
             command.Parameters.AddWithValue("@logoStore", sellerDTO.logoStore ?? (object)DBNull.Value);

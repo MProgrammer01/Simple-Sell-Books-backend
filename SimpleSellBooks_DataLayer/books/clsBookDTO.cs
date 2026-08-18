@@ -71,13 +71,12 @@ namespace SimpleSellBooks_DataLayer.books
         }
 
         //DTO Update
-        public clsBookDTO(int bookID, int sellerId,
+        public clsBookDTO(int bookID,
             int categoryId, string title, string author,
             string? description, decimal price, int stock, int conditionId,
-            string? coverImg, int statusId)
+            string? coverImg, int statusId, int n = 0)
         {
-            bookId = bookID;
-            this.sellerId = sellerId;
+            this.bookId = bookID;
             this.categoryId = categoryId;
             this.title = title;
             this.author = author;
