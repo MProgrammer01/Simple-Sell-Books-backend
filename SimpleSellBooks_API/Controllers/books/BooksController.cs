@@ -11,10 +11,9 @@ namespace SimpleSellBooks_API.Controllers.books
     [ApiController]
     public class BooksController : ControllerBase
     {
-
+        [HttpGet("All", Name = "GetAllBooks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<IEnumerable<clsBookDTO>> GetAllBooks()
         {
             IEnumerable<clsBookDTO> bookList = clsBookBusiness.GetAllBooks();

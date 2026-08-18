@@ -13,7 +13,6 @@ namespace SimpleSellBooks_API.Controllers.categories
         [HttpGet("All", Name = "GetAllCategories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<IEnumerable<clsCategorieDTO>> GetAllCategories()
         {
             IEnumerable<clsCategorieDTO> categorieList = clsCategorieBusiness.GetAllCategories();
