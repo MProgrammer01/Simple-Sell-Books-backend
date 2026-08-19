@@ -122,7 +122,6 @@ namespace SimpleSellBooks_DataLayer.books
 
             string SP_UpdateBook = "SP_UpdateBook";
 
-            System.Diagnostics.Debug.WriteLine($"bookId : {bookDTO.bookId}");
 
             SqlCommand command = new SqlCommand(SP_UpdateBook, connectionToDB);
 

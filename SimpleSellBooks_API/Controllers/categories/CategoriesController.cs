@@ -25,11 +25,11 @@ namespace SimpleSellBooks_API.Controllers.categories
             return Ok(categorieList);
         }
 
+
         [HttpGet("FindByCategoryID/{categoryID}", Name = "GetCategorieByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsCategorieDTO> GetCategorieByID(int categoryID)
         {
             if (categoryID < 1)

@@ -18,6 +18,7 @@ namespace SimpleSellBooks_BusinessLayer.people
         public string passwordHash { get; set; }
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
+        public string? role { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
 
@@ -32,6 +33,7 @@ namespace SimpleSellBooks_BusinessLayer.people
                     this.email,
                     this.phone,
                     this.addressPerson,
+                    this.role,
                     this.createdAt,
                     this.updatedAt);
             }
@@ -46,7 +48,9 @@ namespace SimpleSellBooks_BusinessLayer.people
                 this.email,
                 this.passwordHash,
                 this.phone,
-                this.addressPerson);
+                this.addressPerson
+                //, this.role
+                );
             }
         }
 
@@ -59,7 +63,9 @@ namespace SimpleSellBooks_BusinessLayer.people
                 this.fullName,
                 this.email,
                 this.phone,
-                this.addressPerson);
+                this.addressPerson
+                //, this.role
+                );
             }
         }
 
@@ -102,6 +108,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             this.passwordHash = string.Empty;
             this.phone = string.Empty;
             this.addressPerson = string.Empty;
+            this.role = string.Empty;
             this.createdAt = DateTime.Now;
             this.updatedAt = DateTime.Now;
 
@@ -116,6 +123,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             this.passwordHash = String.Empty;
             this.phone = personDTO.phone;
             this.addressPerson = personDTO.addressPerson;
+            this.role = personDTO.role;
             this.createdAt = personDTO.createdAt;
             this.updatedAt = personDTO.updatedAt;
 

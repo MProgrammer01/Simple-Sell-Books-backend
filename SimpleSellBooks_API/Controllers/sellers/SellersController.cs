@@ -14,7 +14,6 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [HttpGet("All", Name = "GetAllSellers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<IEnumerable<clsSellerDTO>> GetAllSellers()
         {
             IEnumerable<clsSellerDTO> sellerList = clsSellerBusiness.GetAllSellers();
@@ -32,7 +31,6 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsSellerDTO> GetSellerByID(int sellerID)
         {
             if (sellerID < 1)
@@ -54,7 +52,6 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [HttpPost(Name = "AddNewSeller")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
         public ActionResult<clsSellerDTO> AddNewSeller(clsSellerDTO newSellerDTO)
         {
             if (newSellerDTO == null || newSellerDTO.personID < 0 || 
@@ -78,11 +75,11 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return BadRequest("Failed to add seller.");
         }
 
+
         [HttpPut("{id}", Name = "UpdateSeller")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsSellerDTO> UpdateSeller(int id, clsSellerDTO updatedSellerDTO)
         {
             if (id < 1)
@@ -113,11 +110,11 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return BadRequest("Failed to update seller.");
         }
 
+
         [HttpDelete("{id}", Name = "DeleteSeller")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult DeleteSeller(int id)
         {
             if (id < 1)

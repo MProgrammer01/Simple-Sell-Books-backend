@@ -70,6 +70,7 @@ namespace SimpleSellBooks_API.Controllers.people
             person.passwordHash = newPersonDTO.passwordHash;
             person.phone = !string.IsNullOrEmpty(newPersonDTO.phone) ? newPersonDTO.phone : null;
             person.addressPerson = !string.IsNullOrEmpty(newPersonDTO.addressPerson) ? newPersonDTO.addressPerson : null;
+            //person.role = !string.IsNullOrEmpty(newPersonDTO.role) ? newPersonDTO.role : null;
 
             if (person.Save())
             {
@@ -112,6 +113,7 @@ namespace SimpleSellBooks_API.Controllers.people
             person.email = updatedPersonDTO.email;
             person.phone = !string.IsNullOrEmpty(updatedPersonDTO.phone) ? updatedPersonDTO.phone : null;
             person.addressPerson = !string.IsNullOrEmpty(updatedPersonDTO.addressPerson) ? updatedPersonDTO.addressPerson : null;
+            //person.role = !string.IsNullOrEmpty(updatedPersonDTO.role) ? updatedPersonDTO.role : null;
 
             if (person.Save())
             {

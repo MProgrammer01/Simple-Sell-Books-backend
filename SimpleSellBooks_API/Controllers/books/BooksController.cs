@@ -31,7 +31,6 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsBookDTO> GetBookById(int bookId)
         {
             if (bookId < 1)
@@ -49,10 +48,10 @@ namespace SimpleSellBooks_API.Controllers.books
             return Ok(book.bookDTO);
         }
 
+
         [HttpPost(Name = "AddNewBook")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
         public ActionResult<clsBookDTO> AddNewBook(clsBookDTO newBookDTO)
         {
             if (newBookDTO == null || newBookDTO.sellerId < 0 || 
@@ -85,11 +84,11 @@ namespace SimpleSellBooks_API.Controllers.books
             return BadRequest("Failed to add book.");
         }
 
+
         [HttpPut("{id}", Name = "UpdateBook")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsBookDTO> UpdateBook(int id, clsBookDTO updatedBookDTO)
         {
             if (id < 1)
@@ -130,11 +129,11 @@ namespace SimpleSellBooks_API.Controllers.books
             return BadRequest("Failed to update book.");
         }
 
+
         [HttpDelete("{id}", Name = "DeleteBook")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult DeleteBook(int id)
         {
             

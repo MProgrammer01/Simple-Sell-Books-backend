@@ -37,11 +37,13 @@ namespace SimpleSellBooks_DataLayer.people
                                             (string)reader["phone"];
                         string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
                                             (string)reader["addressPerson"];
+                        string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
+                                            (string)reader["role"];
                         DateTime createdAt = (DateTime)reader["createdAt"];
                         DateTime updatedAt = (DateTime)reader["updatedAt"];
 
                         listPerson.Add(new clsPersonDTO(personID, fullName, email, 
-                            phone, addressPerson, createdAt, updatedAt));
+                            phone, addressPerson, role, createdAt, updatedAt));
 
                     }
                 }
@@ -76,6 +78,7 @@ namespace SimpleSellBooks_DataLayer.people
             command.Parameters.AddWithValue("@passwordHash", personDTO.passwordHash);
             command.Parameters.AddWithValue("@phone", personDTO.phone ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@addressPerson", personDTO.addressPerson ?? (object)DBNull.Value);
+            //command.Parameters.AddWithValue("@role", personDTO.role ?? (object)DBNull.Value);
 
             var outputIdParam = new SqlParameter("@NewPerson_ID", SqlDbType.Int)
             {
@@ -121,6 +124,7 @@ namespace SimpleSellBooks_DataLayer.people
             command.Parameters.AddWithValue("@email", personDTO.email);
             command.Parameters.AddWithValue("@phone", personDTO.phone ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@addressPerson", personDTO.addressPerson ?? (object)DBNull.Value);
+            //command.Parameters.AddWithValue("@role", personDTO.role ?? (object)DBNull.Value);
 
 
             try
@@ -202,12 +206,14 @@ namespace SimpleSellBooks_DataLayer.people
                                         (string)reader["phone"];
                     string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
                                         (string)reader["addressPerson"];
+                    string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
+                                        (string)reader["role"];
                     DateTime createdAt = (DateTime)reader["createdAt"];
                     DateTime updatedAt = (DateTime)reader["updatedAt"];
 
 
                     personDTO = new clsPersonDTO(personID, fullName, email,
-                        phone, addressPerson, createdAt, updatedAt);
+                        phone, addressPerson, role, createdAt, updatedAt);
                 }
 
                 reader.Close();

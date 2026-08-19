@@ -13,7 +13,6 @@ namespace SimpleSellBooks_API.Controllers.conditions
         [HttpGet("All", Name = "GetAllConditions")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<IEnumerable<clsConditionDTO>> GetAllConditions()
         {
             IEnumerable<clsConditionDTO> conditionList = clsConditionBusiness.GetAllConditions();
@@ -26,11 +25,11 @@ namespace SimpleSellBooks_API.Controllers.conditions
             return Ok(conditionList);
         }
 
+
         [HttpGet("FindByConditionID/{conditionID}", Name = "GetConditionByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<clsConditionDTO> GetConditionByID(int conditionID)
         {
             if (conditionID < 1)
