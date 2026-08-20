@@ -150,6 +150,7 @@ namespace SimpleSellBooks_BusinessLayer.people
 
         bool _AddNewPerson()
         {
+            this.passwordHash = BCrypt.Net.BCrypt.HashPassword(this.passwordHash);
             this.personID = clsPersonData.AddNewPerson(personAddOrSignUpDTO);
             return (this.personID > 0);
         }

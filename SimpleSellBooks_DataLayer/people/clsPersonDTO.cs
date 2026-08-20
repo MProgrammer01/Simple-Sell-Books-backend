@@ -10,14 +10,18 @@ namespace SimpleSellBooks_DataLayer.people
     {
         public int personID { get; set; }
         public string fullName { get; set; }
-        public string email { get; set; }
-        public string passwordHash { get; set; }
+        
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
-        public string? role { get; set; }
+        
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
 
+        //Authentication-related fields
+        public string email { get; set; }
+        public string passwordHash { get; set; }
+        public string? role { get; set; }
+        
 
         public clsPersonDTO()
         {
