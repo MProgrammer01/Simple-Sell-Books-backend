@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace SimpleSellBooks_API.Controllers.sellers
 {
+    [Authorize]
     [Route("api/Sellers")]
     [ApiController]
     public class SellersController : ControllerBase

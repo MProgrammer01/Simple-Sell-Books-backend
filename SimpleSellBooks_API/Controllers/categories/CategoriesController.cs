@@ -6,6 +6,7 @@ using SimpleSellBooks_DataLayer.categories;
 
 namespace SimpleSellBooks_API.Controllers.categories
 {
+    [Authorize]
     [Route("api/Categories")]
     [ApiController]
     public class CategoriesController : ControllerBase

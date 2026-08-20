@@ -6,6 +6,7 @@ using SimpleSellBooks_DataLayer.conditions;
 
 namespace SimpleSellBooks_API.Controllers.conditions
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class conditionsController : ControllerBase

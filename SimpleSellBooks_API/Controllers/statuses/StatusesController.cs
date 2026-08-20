@@ -6,6 +6,7 @@ using SimpleSellBooks_DataLayer.statuses;
 
 namespace SimpleSellBooks_API.Controllers.statuses
 {
+    [Authorize]
     [Route("api/Statuses")]
     [ApiController]
     public class StatusesController : ControllerBase
