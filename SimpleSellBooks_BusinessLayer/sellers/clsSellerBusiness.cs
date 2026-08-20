@@ -54,7 +54,7 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             this.personID = sellerDTO.personID;
             this.storeName = sellerDTO.storeName;
             this.logoStore = sellerDTO.logoStore;
-            this.personInfo = clsPersonBusiness.FindPerson(sellerDTO.personID) ?? new clsPersonBusiness();
+            this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
             Mode = enMode.UpdateSeller;
         }
 

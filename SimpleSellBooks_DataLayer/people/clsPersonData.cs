@@ -75,7 +75,7 @@ namespace SimpleSellBooks_DataLayer.people
 
             command.Parameters.AddWithValue("@fullName", personDTO.fullName);
             command.Parameters.AddWithValue("@email", personDTO.email);
-            command.Parameters.AddWithValue("@passwordHash", personDTO.passwordHash);
+            command.Parameters.AddWithValue("@passwordHash", personDTO.password);
             command.Parameters.AddWithValue("@phone", personDTO.phone ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@addressPerson", personDTO.addressPerson ?? (object)DBNull.Value);
             //command.Parameters.AddWithValue("@role", personDTO.role ?? (object)DBNull.Value);
@@ -202,6 +202,56 @@ namespace SimpleSellBooks_DataLayer.people
                     personID = (int)reader["personID"];
                     string fullName = (string)reader["fullName"];
                     string email = (string)reader["email"];
+                    string? phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? null :
+                                        (string)reader["phone"];
+                    string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
+                                        (string)reader["addressPerson"];
+                    string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
+                                        (string)reader["role"];
+                    DateTime createdAt = (DateTime)reader["createdAt"];
+                    DateTime updatedAt = (DateTime)reader["updatedAt"];
+
+
+                    personDTO = new clsPersonDTO(personID, fullName, email,
+                        phone, addressPerson, role, createdAt, updatedAt);
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error GetPersonByID Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return personDTO;
+        }
+
+        public static clsPersonDTO GetPersonByEmail(string email)
+        {
+            clsPersonDTO personDTO = new clsPersonDTO();
+
+            string SP_GetPersonByEmail = "SP_GetPersonByEmail";
+
+            SqlCommand command = new SqlCommand(SP_GetPersonByEmail, connectionToDB);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@email", email);
+
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    int personID = (int)reader["personID"];
+                    string fullName = (string)reader["fullName"];
+                    email = (string)reader["email"];
                     string? phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? null :
                                         (string)reader["phone"];
                     string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :

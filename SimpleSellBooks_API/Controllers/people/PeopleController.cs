@@ -40,7 +40,7 @@ namespace SimpleSellBooks_API.Controllers.people
                 return BadRequest($"Not accepted personID {personID}");
             }
 
-            clsPersonBusiness? person = clsPersonBusiness.FindPerson(personID);
+            clsPersonBusiness? person = clsPersonBusiness.FindPersonByID(personID);
 
             if (person == null)
             {
@@ -50,7 +50,29 @@ namespace SimpleSellBooks_API.Controllers.people
             return Ok(person.personDTO);
         }
 
-        
+        [HttpGet("FindByPersonEmail/{email}", Name = "GetPersonByEmail")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public ActionResult<clsPersonDTO> GetPersonByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest($"Not accepted person email {email}");
+            }
+
+            clsPersonBusiness? person = clsPersonBusiness.FindPersonByEmail(email);
+
+            if (person == null)
+            {
+                return NotFound($"Person with email {email} not found.");
+            }
+
+            return Ok(person.personDTO);
+        }
+
+
         [HttpPost(Name = "AddNewPerson")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -59,7 +81,7 @@ namespace SimpleSellBooks_API.Controllers.people
         {
             if (newPersonDTO == null || string.IsNullOrEmpty(newPersonDTO.fullName) || 
                 string.IsNullOrEmpty(newPersonDTO.email) || 
-                string.IsNullOrEmpty(newPersonDTO.passwordHash))
+                string.IsNullOrEmpty(newPersonDTO.password))
             {
                 return BadRequest("Invalid person data.");
             }
@@ -67,7 +89,7 @@ namespace SimpleSellBooks_API.Controllers.people
             clsPersonBusiness person = new clsPersonBusiness();
             person.fullName = newPersonDTO.fullName;
             person.email = newPersonDTO.email;
-            person.passwordHash = newPersonDTO.passwordHash;
+            person.password = newPersonDTO.password;
             person.phone = !string.IsNullOrEmpty(newPersonDTO.phone) ? newPersonDTO.phone : null;
             person.addressPerson = !string.IsNullOrEmpty(newPersonDTO.addressPerson) ? newPersonDTO.addressPerson : null;
             //person.role = !string.IsNullOrEmpty(newPersonDTO.role) ? newPersonDTO.role : null;
@@ -102,7 +124,7 @@ namespace SimpleSellBooks_API.Controllers.people
                 return BadRequest("Invalid person data.");
             }
 
-            clsPersonBusiness? person = clsPersonBusiness.FindPerson(id);
+            clsPersonBusiness? person = clsPersonBusiness.FindPersonByID(id);
 
             if (person == null)
             {
@@ -135,7 +157,7 @@ namespace SimpleSellBooks_API.Controllers.people
                 return BadRequest($"Not accepted ID {id}");
             }
 
-            clsPersonBusiness? person = clsPersonBusiness.FindPerson(id);
+            clsPersonBusiness? person = clsPersonBusiness.FindPersonByID(id);
 
             if (person == null)
             {

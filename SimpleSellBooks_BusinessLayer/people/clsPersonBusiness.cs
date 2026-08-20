@@ -15,7 +15,7 @@ namespace SimpleSellBooks_BusinessLayer.people
         public int personID { get; set; }
         public string fullName { get; set; }
         public string email { get; set; }
-        public string passwordHash { get; set; }
+        public string password { get; set; }
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
         public string? role { get; set; }
@@ -46,7 +46,7 @@ namespace SimpleSellBooks_BusinessLayer.people
                 return new clsPersonDTO(
                 this.fullName,
                 this.email,
-                this.passwordHash,
+                this.password,
                 this.phone,
                 this.addressPerson
                 //, this.role
@@ -75,7 +75,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             {
                 return new clsPersonDTO(
                     this.personID,
-                this.passwordHash);
+                this.password);
             }
         }
 
@@ -85,7 +85,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             {
                 return new clsPersonDTO(
                      this.email,
-                this.passwordHash);
+                this.password);
             }
         }
 
@@ -105,7 +105,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             this.personID = 0;
             this.fullName = string.Empty;
             this.email = string.Empty;
-            this.passwordHash = string.Empty;
+            this.password = string.Empty;
             this.phone = string.Empty;
             this.addressPerson = string.Empty;
             this.role = string.Empty;
@@ -120,7 +120,7 @@ namespace SimpleSellBooks_BusinessLayer.people
             this.personID = personDTO.personID;
             this.fullName = personDTO.fullName;
             this.email = personDTO.email;
-            this.passwordHash = String.Empty;
+            this.password = String.Empty;
             this.phone = personDTO.phone;
             this.addressPerson = personDTO.addressPerson;
             this.role = personDTO.role;
@@ -136,7 +136,7 @@ namespace SimpleSellBooks_BusinessLayer.people
         }
 
 
-        public static clsPersonBusiness? FindPerson(int personID)
+        public static clsPersonBusiness? FindPersonByID(int personID)
         {
             clsPersonDTO personDTO = clsPersonData.GetPersonByID(personID);
 
@@ -147,10 +147,39 @@ namespace SimpleSellBooks_BusinessLayer.people
             return null;
         }
 
+        public static clsPersonBusiness? FindPersonByEmail(string email)
+        {
+            clsPersonDTO personDTO = clsPersonData.GetPersonByEmail(email);
+
+            if (personDTO != null && personDTO.personID > 0)
+            {
+                return new clsPersonBusiness(personDTO);
+            }
+            return null;
+        }
+
+        public static clsPersonBusiness? Login(string email, string password)
+        {
+            clsPersonBusiness? person = FindPersonByEmail(email);
+
+            if (person == null)
+                return null;
+
+            bool isValidPassword =
+                BCrypt.Net.BCrypt.Verify(
+                    password,
+                    person.password
+                );
+
+            if (!isValidPassword)
+                return null;
+
+            return person;
+        }
 
         bool _AddNewPerson()
         {
-            this.passwordHash = BCrypt.Net.BCrypt.HashPassword(this.passwordHash);
+            this.password = BCrypt.Net.BCrypt.HashPassword(this.password);
             this.personID = clsPersonData.AddNewPerson(personAddOrSignUpDTO);
             return (this.personID > 0);
         }

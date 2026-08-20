@@ -19,7 +19,7 @@ namespace SimpleSellBooks_DataLayer.people
 
         //Authentication-related fields
         public string email { get; set; }
-        public string passwordHash { get; set; }
+        public string password { get; set; }
         public string? role { get; set; }
         
 
@@ -27,7 +27,7 @@ namespace SimpleSellBooks_DataLayer.people
         {
             fullName = string.Empty;
             email = string.Empty;
-            passwordHash = string.Empty;
+            password = string.Empty;
             role = string.Empty;
 
         }
@@ -39,7 +39,7 @@ namespace SimpleSellBooks_DataLayer.people
             this.personID = personID;
             this.fullName = fullName;
             this.email = email;
-            this.passwordHash = string.Empty;
+            this.password = string.Empty;
             this.phone = phone;
             this.addressPerson = addressPerson;
             this.role = role;
@@ -55,7 +55,7 @@ namespace SimpleSellBooks_DataLayer.people
         {
             this.fullName = fullName;
             this.email = email;
-            this.passwordHash = passwordHash;
+            this.password = passwordHash;
             this.phone = phone;
             this.addressPerson = addressPerson;
             //this.role = role;
@@ -70,7 +70,7 @@ namespace SimpleSellBooks_DataLayer.people
             this.personID = personID;
             this.fullName = fullName;
             this.email = email;
-            this.passwordHash = string.Empty;
+            this.password = string.Empty;
             this.phone = phone;
             this.addressPerson = addressPerson;
             //this.role = role;
@@ -80,17 +80,17 @@ namespace SimpleSellBooks_DataLayer.people
         public clsPersonDTO(int personID, string newPasswordHash)
         {
             this.personID = personID;
-            this.passwordHash = newPasswordHash;
+            this.password = newPasswordHash;
             this.fullName = string.Empty;
             this.email = string.Empty;
 
         }
 
         //Sign In
-        public clsPersonDTO(string email, string passwordHash)
+        public clsPersonDTO(string email, string password)
         {
             this.email = email;
-            this.passwordHash = passwordHash;
+            this.password = password;
             this.fullName = string.Empty;
 
         }
@@ -101,7 +101,7 @@ namespace SimpleSellBooks_DataLayer.people
             this.personID = personID;
             this.fullName = fullName;
             this.email = email;
-            this.passwordHash = string.Empty;
+            this.password = string.Empty;
 
         }
     }
