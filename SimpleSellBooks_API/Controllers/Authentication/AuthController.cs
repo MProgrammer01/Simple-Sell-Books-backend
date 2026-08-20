@@ -19,27 +19,24 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         [HttpPost("login")]
         public IActionResult Login([FromBody] clsPersonDTO personDTO)
         {
-            // Step 1: Find the student by email from the in-memory data store.
+            // Step 1: Find the person by email from DB.
             // Email acts as the unique login identifier.
-            var student = StudentDataSimulation.StudentsList
-                .FirstOrDefault(s => s.Email == request.Email);
-            clsPersonLoginDTO? person =
-        clsPersonBusiness.Login(
-            personDTO.email,
-            personDTO.password
-        );
+            clsPersonDTO? person = clsPersonBusiness.Login(personDTO.email);
 
             // If no student is found with the given email,
             // return 401 Unauthorized without revealing which field was wrong.
-            if (student == null)
+            if (person == null)
                 return Unauthorized("Invalid credentials");
+
 
 
             // Step 2: Verify the provided password against the stored hash.
             // BCrypt handles hashing and salt internally.
             bool isValidPassword =
-                BCrypt.Net.BCrypt.Verify(request.Password, student.PasswordHash);
-
+                BCrypt.Net.BCrypt.Verify(
+                    personDTO.password,
+                    person.password
+                );
 
             // If the password does not match the stored hash,
             // return 401 Unauthorized.
@@ -52,22 +49,21 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             var claims = new[]
             {
                 // Unique identifier for the student
-                new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, person.personID.ToString()),
 
 
                 // Student email address
-                new Claim(ClaimTypes.Email, student.Email),
+                new Claim(ClaimTypes.Email, person.email),
 
 
                 // Role (Student or Admin) used later for authorization
-                new Claim(ClaimTypes.Role, student.Role)
+                new Claim(ClaimTypes.Role, person.role ?? "Unkown")
             };
 
 
             // Step 4: Create the symmetric security key used to sign the JWT.
             // This key must match the key used in JWT validation middleware.
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"));
 
 
             // Step 5: Define the signing credentials.
@@ -78,8 +74,8 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             // Step 6: Create the JWT token.
             // The token includes issuer, audience, claims, expiration, and signature.
             var token = new JwtSecurityToken(
-                issuer: "StudentApi",
-                audience: "StudentApiUsers",
+                issuer: "StoreBookApi",
+                audience: "StoreApiBooks",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds

@@ -158,23 +158,15 @@ namespace SimpleSellBooks_BusinessLayer.people
             return null;
         }
 
-        public static clsPersonBusiness? Login(string email, string password)
+        public static clsPersonDTO? Login(string email)
         {
             clsPersonBusiness? person = FindPersonByEmail(email);
-
             if (person == null)
+            {
                 return null;
-
-            bool isValidPassword =
-                BCrypt.Net.BCrypt.Verify(
-                    password,
-                    person.password
-                );
-
-            if (!isValidPassword)
-                return null;
-
-            return person;
+            }
+                
+            return person.signInDTO;
         }
 
         bool _AddNewPerson()
