@@ -37,8 +37,7 @@ namespace SimpleSellBooks_DataLayer.people
                                             (string)reader["phone"];
                         string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
                                             (string)reader["addressPerson"];
-                        string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
-                                            (string)reader["role"];
+                        string role = (string)reader["role"];
                         DateTime createdAt = (DateTime)reader["createdAt"];
                         DateTime updatedAt = (DateTime)reader["updatedAt"];
 
@@ -63,7 +62,7 @@ namespace SimpleSellBooks_DataLayer.people
             return listPerson;
         }
 
-        public static int AddNewPerson(clsPersonDTO personDTO)
+        public static int AddNewPerson(clsSignUpDTO personDTO)
         {
             int InsertedID = 0;
 
@@ -109,7 +108,7 @@ namespace SimpleSellBooks_DataLayer.people
 
         }
 
-        public static bool UpdatePerson(clsPersonDTO personDTO)
+        public static bool UpdatePerson(clsUpdatePersonDTO personDTO)
         {
             bool isUpdated = false;
 
@@ -206,8 +205,7 @@ namespace SimpleSellBooks_DataLayer.people
                                         (string)reader["phone"];
                     string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
                                         (string)reader["addressPerson"];
-                    string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
-                                        (string)reader["role"];
+                    string role = (string)reader["role"];
                     DateTime createdAt = (DateTime)reader["createdAt"];
                     DateTime updatedAt = (DateTime)reader["updatedAt"];
 
@@ -230,9 +228,9 @@ namespace SimpleSellBooks_DataLayer.people
             return personDTO;
         }
 
-        public static clsPersonDTO GetPersonByEmail(string email)
+        public static clsPersonAuthenticationDTO GetPersonByEmail(string email)
         {
-            clsPersonDTO personDTO = new clsPersonDTO();
+            clsPersonAuthenticationDTO personDTO = new clsPersonAuthenticationDTO();
 
             string SP_GetPersonByEmail = "SP_GetPersonByEmail";
 
@@ -250,27 +248,18 @@ namespace SimpleSellBooks_DataLayer.people
                 if (reader.Read())
                 {
                     int personID = (int)reader["personID"];
-                    string fullName = (string)reader["fullName"];
                     email = (string)reader["email"];
-                    string? phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? null :
-                                        (string)reader["phone"];
-                    string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
-                                        (string)reader["addressPerson"];
-                    string? role = reader.IsDBNull(reader.GetOrdinal("role")) ? null :
-                                        (string)reader["role"];
-                    DateTime createdAt = (DateTime)reader["createdAt"];
-                    DateTime updatedAt = (DateTime)reader["updatedAt"];
-
-
-                    personDTO = new clsPersonDTO(personID, fullName, email,
-                        phone, addressPerson, role, createdAt, updatedAt);
+                    string passwordHash = (string)reader["passwordHash"];
+                    string role = (string)reader["role"];
+                    personDTO = new clsPersonAuthenticationDTO(personID, email, passwordHash, role);
+                    
                 }
 
                 reader.Close();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error GetPersonByID Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error GetPersonByEmail Data " + ex.Message);
             }
             finally
             {

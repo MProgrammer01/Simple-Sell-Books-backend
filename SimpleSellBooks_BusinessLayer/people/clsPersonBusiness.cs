@@ -18,7 +18,7 @@ namespace SimpleSellBooks_BusinessLayer.people
         public string password { get; set; }
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
-        public string? role { get; set; }
+        public string role { get; set; }
         public DateTime createdAt { get; set; }
         public DateTime updatedAt { get; set; }
 
@@ -39,67 +39,43 @@ namespace SimpleSellBooks_BusinessLayer.people
             }
         }
 
-        clsPersonDTO personAddOrSignUpDTO
+        clsSignUpDTO personSignUpDTO
         {
             get
             {
-                return new clsPersonDTO(
+                return new clsSignUpDTO(
                 this.fullName,
                 this.email,
                 this.password,
                 this.phone,
                 this.addressPerson
-                //, this.role
                 );
             }
         }
 
-        clsPersonDTO personUpdateDTO
+        clsUpdatePersonDTO personUpdateDTO
         {
             get
             {
-                return new clsPersonDTO(
+                return new clsUpdatePersonDTO(
                     this.personID,
                 this.fullName,
                 this.email,
                 this.phone,
                 this.addressPerson
-                //, this.role
                 );
             }
         }
 
-        clsPersonDTO changePasswordDTO
+        clsSignInDTO signInDTO
         {
             get
             {
-                return new clsPersonDTO(
-                    this.personID,
-                this.password);
+                return new clsSignInDTO(this.email, this.password);
             }
         }
 
-        clsPersonDTO signInDTO
-        {
-            get
-            {
-                return new clsPersonDTO(
-                     this.email,
-                this.password);
-            }
-        }
-
-        clsPersonDTO signInResponse
-        {
-            get
-            {
-                return new clsPersonDTO(
-                     this.personID,
-                this.fullName,
-                this.email);
-            }
-        }
-
+        // Empty constructor
         public clsPersonBusiness()
         {
             this.personID = 0;
@@ -115,12 +91,13 @@ namespace SimpleSellBooks_BusinessLayer.people
             Mode = enMode.AddNewPerson;
         }
 
+        // Constructor for existing Person
         clsPersonBusiness(clsPersonDTO personDTO)
         {
             this.personID = personDTO.personID;
             this.fullName = personDTO.fullName;
             this.email = personDTO.email;
-            this.password = String.Empty;
+            this.password = string.Empty;
             this.phone = personDTO.phone;
             this.addressPerson = personDTO.addressPerson;
             this.role = personDTO.role;
@@ -129,6 +106,9 @@ namespace SimpleSellBooks_BusinessLayer.people
 
             Mode = enMode.UpdatePerson;
         }
+
+        // Add New Person
+
 
         public static IEnumerable<clsPersonDTO> GetAllPersons()
         {
@@ -147,32 +127,34 @@ namespace SimpleSellBooks_BusinessLayer.people
             return null;
         }
 
-        public static clsPersonBusiness? FindPersonByEmail(string email)
+        public static clsSignInResponseDTO? Login(clsSignInDTO signInDTO)
         {
-            clsPersonDTO personDTO = clsPersonData.GetPersonByEmail(email);
-
-            if (personDTO != null && personDTO.personID > 0)
-            {
-                return new clsPersonBusiness(personDTO);
-            }
-            return null;
-        }
-
-        public static clsPersonDTO? Login(string email)
-        {
-            clsPersonBusiness? person = FindPersonByEmail(email);
-            if (person == null)
+            clsPersonAuthenticationDTO personAuthDTO = clsPersonData.GetPersonByEmail(signInDTO.email);
+            
+            if (personAuthDTO == null || personAuthDTO.personID <= 0)
             {
                 return null;
             }
-                
-            return person.signInDTO;
+
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(
+                     signInDTO.password,
+                     personAuthDTO.passwordHash
+                 );
+
+            if (!isValidPassword)
+                return null;
+
+            return new clsSignInResponseDTO(
+                personAuthDTO.personID,
+                personAuthDTO.email,
+                personAuthDTO.role
+            );
         }
 
         bool _AddNewPerson()
         {
             this.password = BCrypt.Net.BCrypt.HashPassword(this.password);
-            this.personID = clsPersonData.AddNewPerson(personAddOrSignUpDTO);
+            this.personID = clsPersonData.AddNewPerson(personSignUpDTO);
             return (this.personID > 0);
         }
 

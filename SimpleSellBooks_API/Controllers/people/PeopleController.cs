@@ -56,29 +56,29 @@ namespace SimpleSellBooks_API.Controllers.people
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<clsPersonDTO> GetPersonByEmail(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-            {
-                return BadRequest($"Not accepted person email {email}");
-            }
+        //public ActionResult<clsPersonDTO> GetPersonByEmail(string email)
+        //{
+        //    if (string.IsNullOrEmpty(email))
+        //    {
+        //        return BadRequest($"Not accepted person email {email}");
+        //    }
 
-            clsPersonBusiness? person = clsPersonBusiness.FindPersonByEmail(email);
+        //    clsPersonBusiness? person = clsPersonBusiness.FindPersonByEmail(email);
 
-            if (person == null)
-            {
-                return NotFound($"Person with email {email} not found.");
-            }
+        //    if (person == null)
+        //    {
+        //        return NotFound($"Person with email {email} not found.");
+        //    }
 
-            return Ok(person.personDTO);
-        }
+        //    return Ok(person.personDTO);
+        //}
 
 
         [HttpPost(Name = "AddNewPerson")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
-        public ActionResult<clsPersonDTO> AddNewPerson(clsPersonDTO newPersonDTO)
+        public ActionResult<clsPersonDTO> AddNewPerson(clsSignUpDTO newPersonDTO)
         {
             if (newPersonDTO == null || string.IsNullOrEmpty(newPersonDTO.fullName) || 
                 string.IsNullOrEmpty(newPersonDTO.email) || 
@@ -111,7 +111,7 @@ namespace SimpleSellBooks_API.Controllers.people
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<clsPersonDTO> UpdatePerson(int id, clsPersonDTO updatedPersonDTO)
+        public ActionResult<clsPersonDTO> UpdatePerson(int id, clsUpdatePersonDTO updatedPersonDTO)
         {
             if (id < 1)
             {

@@ -17,61 +17,46 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         // This endpoint handles user login.
         // It verifies credentials and returns a JWT token if login succeeds.
         [HttpPost("login")]
-        public IActionResult Login([FromBody] clsPersonDTO personDTO)
+        public IActionResult Login([FromBody] clsSignInDTO signInDTO)
         {
             // Step 1: Find the person by email from DB.
             // Email acts as the unique login identifier.
-            clsPersonDTO? person = clsPersonBusiness.Login(personDTO.email);
+            clsSignInResponseDTO? signInResp = clsPersonBusiness.Login(signInDTO);
 
             // If no student is found with the given email,
             // return 401 Unauthorized without revealing which field was wrong.
-            if (person == null)
+            if (signInResp == null)
                 return Unauthorized("Invalid credentials");
 
 
-
-            // Step 2: Verify the provided password against the stored hash.
-            // BCrypt handles hashing and salt internally.
-            bool isValidPassword =
-                BCrypt.Net.BCrypt.Verify(
-                    personDTO.password,
-                    person.password
-                );
-
-            // If the password does not match the stored hash,
-            // return 401 Unauthorized.
-            if (!isValidPassword)
-                return Unauthorized("Invalid credentials");
-
-
-            // Step 3: Create claims that represent the authenticated user's identity.
+            // Step 2: Create claims that represent the authenticated user's identity.
             // These claims will be embedded inside the JWT.
             var claims = new[]
             {
                 // Unique identifier for the student
-                new Claim(ClaimTypes.NameIdentifier, person.personID.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, signInResp.personID.ToString()),
 
 
                 // Student email address
-                new Claim(ClaimTypes.Email, person.email),
+                new Claim(ClaimTypes.Email, signInResp.email),
 
 
                 // Role (Student or Admin) used later for authorization
-                new Claim(ClaimTypes.Role, person.role ?? "Unkown")
+                new Claim(ClaimTypes.Role, signInResp.role ?? "Unkown")
             };
 
 
-            // Step 4: Create the symmetric security key used to sign the JWT.
+            // Step 3: Create the symmetric security key used to sign the JWT.
             // This key must match the key used in JWT validation middleware.
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("THIS_IS_A_VERY_SECRET_KEY_123456"));
 
 
-            // Step 5: Define the signing credentials.
+            // Step 4: Define the signing credentials.
             // This specifies the algorithm used to sign the token.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 
-            // Step 6: Create the JWT token.
+            // Step 5: Create the JWT token.
             // The token includes issuer, audience, claims, expiration, and signature.
             var token = new JwtSecurityToken(
                 issuer: "StoreBookApi",
@@ -80,14 +65,12 @@ namespace SimpleSellBooks_API.Controllers.Authentication
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds
             );
-
-
+            //Step 6: Generate JWT
+            signInResp.token = new JwtSecurityTokenHandler().WriteToken(token);
+            
             // Step 7: Return the serialized JWT token to the client.
             // The client will send this token with future requests.
-            return Ok(new
-            {
-                token = new JwtSecurityTokenHandler().WriteToken(token)
-            });
+            return Ok(signInResp);
         }
     }
 }
