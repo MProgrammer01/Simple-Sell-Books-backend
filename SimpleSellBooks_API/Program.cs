@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SimpleSellBooks_API.Authorization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +75,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // ===============================
 // Authorization Configuration
 // ===============================
+// ===============================
+// Authorization Configuration
+// ===============================
+builder.Services.AddSingleton<IAuthorizationHandler, OwnerOrAdminHandler>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OwnerOrAdmin", policy =>
+        policy.Requirements.Add(new OwnerOrAdminRequirement()));
+});
 
 // Register authorization services.
 // This enables attributes like [Authorize] and role-based authorization.

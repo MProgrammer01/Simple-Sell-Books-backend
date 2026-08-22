@@ -28,12 +28,15 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return Ok(sellerList);
         }
 
-        [Authorize(Roles = "Admin, Seller")]
+
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindBySellerID/{sellerID}", Name = "GetSellerByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsSellerDTO> GetSellerByID(int sellerID)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<clsSellerDTO>> GetSellerByID(int sellerID,
+                [FromServices] IAuthorizationService authorizationService)
         {
             if (sellerID < 1)
             {
@@ -46,6 +49,14 @@ namespace SimpleSellBooks_API.Controllers.sellers
             {
                 return NotFound($"Seller with sellerID {sellerID} not found.");
             }
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        sellerID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+                return Forbid(); // 403
 
             return Ok(seller.sellerDTO);
         }
