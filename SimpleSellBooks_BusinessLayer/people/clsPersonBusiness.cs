@@ -129,7 +129,7 @@ namespace SimpleSellBooks_BusinessLayer.people
 
         public static clsSignInResponseDTO? Login(clsSignInDTO signInDTO)
         {
-            clsPersonAuthenticationDTO personAuthDTO = clsPersonData.GetPersonByEmail(signInDTO.email);
+            clsPersonAuthenticationDTO personAuthDTO = clsPersonData.SignInResponse(signInDTO.email);
             
             if (personAuthDTO == null || personAuthDTO.personID <= 0)
             {

@@ -228,13 +228,13 @@ namespace SimpleSellBooks_DataLayer.people
             return personDTO;
         }
 
-        public static clsPersonAuthenticationDTO GetPersonByEmail(string email)
+        public static clsPersonAuthenticationDTO SignInResponse(string email)
         {
             clsPersonAuthenticationDTO personDTO = new clsPersonAuthenticationDTO();
 
-            string SP_GetPersonByEmail = "SP_GetPersonByEmail";
+            string SP_SignInResponse = "SP_SignInResponse";
 
-            SqlCommand command = new SqlCommand(SP_GetPersonByEmail, connectionToDB);
+            SqlCommand command = new SqlCommand(SP_SignInResponse, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
 
