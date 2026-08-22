@@ -11,6 +11,7 @@ namespace SimpleSellBooks_API.Controllers.categories
     [ApiController]
     public class CategoriesController : ControllerBase
     {
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("All", Name = "GetAllCategories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -26,7 +27,7 @@ namespace SimpleSellBooks_API.Controllers.categories
             return Ok(categorieList);
         }
 
-
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindByCategoryID/{categoryID}", Name = "GetCategorieByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

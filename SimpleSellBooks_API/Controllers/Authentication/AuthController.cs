@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ namespace SimpleSellBooks_API.Controllers.Authentication
     {
         // This endpoint handles user login.
         // It verifies credentials and returns a JWT token if login succeeds.
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login([FromBody] clsSignInDTO signInDTO)
         {

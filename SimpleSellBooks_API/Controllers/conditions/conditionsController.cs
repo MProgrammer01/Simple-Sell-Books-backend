@@ -11,6 +11,7 @@ namespace SimpleSellBooks_API.Controllers.conditions
     [ApiController]
     public class conditionsController : ControllerBase
     {
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("All", Name = "GetAllConditions")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -27,6 +28,7 @@ namespace SimpleSellBooks_API.Controllers.conditions
         }
 
 
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindByConditionID/{conditionID}", Name = "GetConditionByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

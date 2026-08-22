@@ -12,6 +12,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
     [ApiController]
     public class SellersController : ControllerBase
     {
+        [Authorize(Roles = "Admin")]
         [HttpGet("All", Name = "GetAllSellers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -27,7 +28,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return Ok(sellerList);
         }
 
-
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindBySellerID/{sellerID}", Name = "GetSellerByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,7 +50,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return Ok(seller.sellerDTO);
         }
 
-        
+        [Authorize(Roles = "Admin, Seller")]
         [HttpPost(Name = "AddNewSeller")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -77,6 +78,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
 
+        [Authorize(Roles = "Admin, Seller")]
         [HttpPut("{id}", Name = "UpdateSeller")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -112,6 +114,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
 
+        [Authorize(Roles = "Admin, Seller")]
         [HttpDelete("{id}", Name = "DeleteSeller")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

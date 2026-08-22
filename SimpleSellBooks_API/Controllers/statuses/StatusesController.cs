@@ -11,6 +11,7 @@ namespace SimpleSellBooks_API.Controllers.statuses
     [ApiController]
     public class StatusesController : ControllerBase
     {
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("All", Name = "GetAllStatuses")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -28,6 +29,7 @@ namespace SimpleSellBooks_API.Controllers.statuses
         }
 
 
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindByStatusID/{statusID}", Name = "GetStatuseByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
