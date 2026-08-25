@@ -228,9 +228,9 @@ namespace SimpleSellBooks_DataLayer.people
             return personDTO;
         }
 
-        public static clsPersonAuthenticationDTO SignInResponse(string email)
+        public static clsSignInResponseDTO SignInResponse(string email)
         {
-            clsPersonAuthenticationDTO personDTO = new clsPersonAuthenticationDTO();
+            clsSignInResponseDTO personDTO = new clsSignInResponseDTO();
 
             string SP_SignInResponse = "SP_SignInResponse";
 
@@ -251,7 +251,7 @@ namespace SimpleSellBooks_DataLayer.people
                     email = (string)reader["email"];
                     string passwordHash = (string)reader["passwordHash"];
                     string role = (string)reader["role"];
-                    personDTO = new clsPersonAuthenticationDTO(personID, email, passwordHash, role);
+                    personDTO = new clsSignInResponseDTO(personID, email, role, passwordHash);
                     
                 }
 
@@ -267,6 +267,94 @@ namespace SimpleSellBooks_DataLayer.people
             }
 
             return personDTO;
+        }
+
+
+        public static clsSignInResponseDTO RefreshTokenResponce(string email)
+        {
+            clsSignInResponseDTO personDTO = new clsSignInResponseDTO();
+
+            string SP_RefreshTokenResponce = "SP_RefreshTokenResponce";
+
+            SqlCommand command = new SqlCommand(SP_RefreshTokenResponce, connectionToDB);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@email", email);
+
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    int personID = (int)reader["personID"];
+
+                    email = (string)reader["email"];
+
+                    string role = (string)reader["role"];
+
+                    string refreshTokenHash = (string)reader["RefreshTokenHash"];
+
+                    DateTime? refreshTokenExpirationDate = reader.IsDBNull(reader.GetOrdinal("RefreshTokenExpiresAt")) ? null :
+                                            (DateTime)reader["RefreshTokenExpiresAt"];
+
+                    DateTime? refreshTokenRevokedAt = reader.IsDBNull(reader.GetOrdinal("RefreshTokenRevokedAt")) ? null :
+                                            (DateTime)reader["RefreshTokenRevokedAt"];
+                    
+                    personDTO = new clsSignInResponseDTO(personID, email, role, refreshTokenHash,
+                        refreshTokenExpirationDate, refreshTokenRevokedAt);
+
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error GetPersonByEmail Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return personDTO;
+        }
+
+
+        public static bool UpdateRefreshToken(clsUpdateRefreshTokenDto refreshToken)
+        {
+            bool refreshTokenIsUpdated = false;
+
+            string SP_UpdateRefreshToken = "SP_UpdateRefreshToken";
+
+            SqlCommand command = new SqlCommand(SP_UpdateRefreshToken, connectionToDB);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@personID", refreshToken.personId);
+            command.Parameters.AddWithValue("@RefreshTokenHash", refreshToken.RefreshTokenHash);
+            command.Parameters.AddWithValue("@RefreshTokenExpiresAt", refreshToken.RefreshTokenExpirationDate);
+
+            try
+            {
+                connectionToDB.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    refreshTokenIsUpdated = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error : UpdateRefreshToken Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+            return refreshTokenIsUpdated;
         }
     }
 }

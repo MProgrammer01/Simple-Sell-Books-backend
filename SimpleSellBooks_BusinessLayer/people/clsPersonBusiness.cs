@@ -129,7 +129,7 @@ namespace SimpleSellBooks_BusinessLayer.people
 
         public static clsSignInResponseDTO? Login(clsSignInDTO signInDTO)
         {
-            clsPersonAuthenticationDTO personAuthDTO = clsPersonData.SignInResponse(signInDTO.email);
+            clsSignInResponseDTO personAuthDTO = clsPersonData.SignInResponse(signInDTO.email);
             
             if (personAuthDTO == null || personAuthDTO.personID <= 0)
             {
@@ -149,6 +149,20 @@ namespace SimpleSellBooks_BusinessLayer.people
                 personAuthDTO.email,
                 personAuthDTO.role
             );
+        }
+
+
+        public static clsSignInResponseDTO? RefreshTokenResponce(string email)
+        {
+            clsSignInResponseDTO refreshTokenResp = clsPersonData.RefreshTokenResponce(email);
+
+
+            if (refreshTokenResp == null || refreshTokenResp.personID <= 0)
+            {
+                return null;
+            }
+
+            return refreshTokenResp;
         }
 
         bool _AddNewPerson()
@@ -187,11 +201,16 @@ namespace SimpleSellBooks_BusinessLayer.people
             return false;
         }
 
-
-
         public static bool DeletePerson(int personID)
         {
             return clsPersonData.DeletePerson(personID);
+        }
+
+        public static bool UpdateRefreshToken(clsUpdateRefreshTokenDto refreshToken)
+        {
+            return clsPersonData.UpdateRefreshToken(
+                refreshToken
+            );
         }
     }
 }
