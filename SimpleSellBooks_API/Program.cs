@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SimpleSellBooks_API.Authorization;
+using SimpleSellBooks_API.RateLimiting;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,9 +79,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // ===============================
 // Authorization Configuration
 // ===============================
-// ===============================
-// Authorization Configuration
-// ===============================
+
 builder.Services.AddSingleton<IAuthorizationHandler, OwnerOrAdminHandler>();
 
 builder.Services.AddAuthorization(options =>
@@ -90,6 +92,95 @@ builder.Services.AddAuthorization(options =>
 // This enables attributes like [Authorize] and role-based authorization.
 builder.Services.AddAuthorization();
 
+// ===============================
+// RateLimiting Configuration
+// ===============================
+builder.Services.AddSingleton<AdaptiveRateLimitService>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
+        context =>
+            RateLimitPartition.GetSlidingWindowLimiter(
+                partitionKey: "global",
+                factory: _ => new SlidingWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(1),
+                    SegmentsPerWindow = 6,
+                    QueueLimit = 0
+                }));
+    options.AddPolicy("PerIpOrUser", context =>
+    {
+        var service = context.RequestServices
+        .GetRequiredService<AdaptiveRateLimitService>();
+
+        var permitLimit = service.GetPermitLimit(context);
+
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            RateLimitHelper.GetPartitionKey(context),
+            _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0
+            });
+    });
+    options.AddPolicy("CreatePolicy", context =>
+    {
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: RateLimitHelper.GetPartitionKey(context),
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 25,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0
+            });
+    });
+
+    options.AddPolicy("UpdatePolicy", context =>
+    {
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: RateLimitHelper.GetPartitionKey(context),
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 20,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0
+            });
+    });
+
+    options.AddPolicy("DeletePolicy", context =>
+    {
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: RateLimitHelper.GetPartitionKey(context),
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0
+            });
+    });
+
+    options.AddPolicy("AuthPolicy", context =>
+    {
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: RateLimitHelper.GetPartitionKey(context),
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0
+            });
+    });
+});
 
 // Register controller support.
 builder.Services.AddControllers();
@@ -188,6 +279,8 @@ if (app.Environment.IsDevelopment())
 // Redirect HTTP requests to HTTPS.
 app.UseHttpsRedirection();
 
+app.UseRateLimiter();
+
 //Use Of CORS
 app.UseCors("StoreBooksApiCorsPolicy");
 
@@ -199,7 +292,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Map controller routes (e.g., /api/Person, /api/Auth).
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("PerIpOrUser");
 
 // Start the application.
 app.Run();

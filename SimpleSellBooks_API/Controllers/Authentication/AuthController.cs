@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SimpleSellBooks_API.DTOs.Auth;
 using SimpleSellBooks_BusinessLayer.people;
@@ -22,6 +23,7 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         // It verifies credentials and returns a JWT token if login succeeds.
         [AllowAnonymous]
         [HttpPost("login")]
+        [EnableRateLimiting("AuthPolicy")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -121,6 +123,7 @@ namespace SimpleSellBooks_API.Controllers.Authentication
 
 
        [HttpPost("refresh")]
+        [EnableRateLimiting("AuthPolicy")]
         public IActionResult Refresh([FromBody] clsRefreshRequest request)
         {
             clsSignInResponseDTO? refreshTokenResponse = clsPersonBusiness.RefreshTokenResponce(request.Email);

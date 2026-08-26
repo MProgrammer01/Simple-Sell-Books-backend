@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SimpleSellBooks_BusinessLayer.sellers;
 using SimpleSellBooks_DataLayer.sellers;
 using System.Security.Claims;
@@ -63,6 +64,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
         [Authorize(Roles = "Admin, Seller")]
         [HttpPost(Name = "AddNewSeller")]
+        [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<clsSellerDTO> AddNewSeller(clsSellerDTO newSellerDTO)
@@ -91,6 +93,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
         [Authorize(Roles = "Admin, Seller")]
         [HttpPut("{id}", Name = "UpdateSeller")]
+        [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -127,6 +130,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
         [Authorize(Roles = "Admin, Seller")]
         [HttpDelete("{id}", Name = "DeleteSeller")]
+        [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
