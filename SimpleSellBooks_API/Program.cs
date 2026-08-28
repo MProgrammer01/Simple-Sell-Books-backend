@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SimpleSellBooks_API.Authorization;
 using SimpleSellBooks_API.RateLimiting;
+using SimpleSellBooks_API.Services;
+using SimpleSellBooks_DataLayer.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
@@ -77,10 +80,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // ===============================
-// Authorization Configuration
+// Authorization Configuration With DI
 // ===============================
 
 builder.Services.AddSingleton<IAuthorizationHandler, OwnerOrAdminHandler>();
+
+builder.Services.AddScoped<ISecurityAuditService, SecurityAuditService>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -88,6 +93,20 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new OwnerOrAdminRequirement()));
 });
 
+builder.Services.AddScoped<AuthorizationMiddlewareResultHandler>();
+
+builder.Services.AddScoped<IAuthorizationMiddlewareResultHandler>(sp =>
+    {
+        var defaultHandler =
+            sp.GetRequiredService<AuthorizationMiddlewareResultHandler>();
+
+        var auditService =
+            sp.GetRequiredService<ISecurityAuditService>();
+
+        return new SecurityAuthorizationMiddlewareResultHandler(
+            defaultHandler,
+            auditService);
+    });
 // Register authorization services.
 // This enables attributes like [Authorize] and role-based authorization.
 builder.Services.AddAuthorization();
@@ -112,6 +131,7 @@ builder.Services.AddRateLimiter(options =>
                     SegmentsPerWindow = 6,
                     QueueLimit = 0
                 }));
+    
     options.AddPolicy("PerIpOrUser", context =>
     {
         var service = context.RequestServices
@@ -129,6 +149,7 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0
             });
     });
+    
     options.AddPolicy("CreatePolicy", context =>
     {
         return RateLimitPartition.GetSlidingWindowLimiter(
@@ -180,6 +201,32 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0
             });
     });
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        var httpContext = context.HttpContext;
+
+        var auditService = httpContext.RequestServices
+            .GetRequiredService<ISecurityAuditService>();
+
+        var policyName = httpContext
+            .GetEndpoint()?
+            .Metadata
+            .GetMetadata<EnableRateLimitingAttribute>()?
+            .PolicyName
+            ?? "GlobalLimiter";
+
+        await auditService.LogAsync(
+            SecurityEventTypeAndAction.RateLimitExceeded.ToString(),
+            httpContext,
+            statusCode: StatusCodes.Status429TooManyRequests,
+            action: SecurityAction.RateLimit,
+            details: $"Request rejected by policy {policyName} because the rate limit was exceeded."
+        );
+
+        httpContext.Response.StatusCode =
+            StatusCodes.Status429TooManyRequests;
+    };
 });
 
 // Register controller support.
@@ -260,6 +307,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// ===============================
+// Set DI Of DBContext
+// ===============================
+builder.Services.AddDbContext<SimpleSellBooksDbContext>();
 
 // Build the application.
 // After this point, services are frozen and middleware is configured.

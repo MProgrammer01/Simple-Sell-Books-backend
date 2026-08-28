@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using SimpleSellBooks_API.helper_methods;
+using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.sellers;
 using SimpleSellBooks_DataLayer.sellers;
 using System.Security.Claims;
@@ -13,6 +16,13 @@ namespace SimpleSellBooks_API.Controllers.sellers
     [ApiController]
     public class SellersController : ControllerBase
     {
+        private readonly ISecurityAuditService _auditService;
+
+        public SellersController(ISecurityAuditService auditService)
+        {
+            _auditService = auditService;
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet("All", Name = "GetAllSellers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -55,19 +65,31 @@ namespace SimpleSellBooks_API.Controllers.sellers
                         User,
                         sellerID,
                         "OwnerOrAdmin");
+            
+            if (!authResult.Succeeded){
 
-            if (!authResult.Succeeded)
-                return Forbid(); // 403
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "User is not authorized to access this seller.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: sellerID.ToString(),
+                    targetType: "Seller",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
 
             return Ok(seller.sellerDTO);
         }
 
-        [Authorize(Roles = "Admin, Seller")]
+        [Authorize(Roles = "Admin")]
         [HttpPost(Name = "AddNewSeller")]
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsSellerDTO> AddNewSeller(clsSellerDTO newSellerDTO)
+        public async Task<ActionResult<clsSellerDTO>> AddNewSeller(clsSellerDTO newSellerDTO)
         {
             if (newSellerDTO == null || newSellerDTO.personID < 0 || 
                 string.IsNullOrEmpty(newSellerDTO.storeName))
@@ -82,6 +104,17 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
             if (seller.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status201Created,
+                    targetType: "Seller",
+                    targetId: seller.sellerID.ToString(),
+                    details: "Admin Added New Seller."
+                );
+
                 return CreatedAtRoute("GetSellerByID",
                     new { sellerID = seller.sellerID },
                     seller.sellerDTO);
@@ -97,7 +130,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsSellerDTO> UpdateSeller(int id, clsSellerDTO updatedSellerDTO)
+        public async Task<ActionResult<clsSellerDTO>> UpdateSeller(int id, clsSellerDTO updatedSellerDTO)
         {
             if (id < 1)
             {
@@ -121,6 +154,16 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
             if (seller.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Seller",
+                    targetId: seller.sellerID.ToString(),
+                    details: $"Seller Was Updated By{clsHelperMethods.GetCurrentRole(HttpContext)}."
+                );
                 return Ok(seller.sellerDTO);
             }
 
@@ -128,13 +171,13 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
 
-        [Authorize(Roles = "Admin, Seller")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}", Name = "DeleteSeller")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteSeller(int id)
+        public async Task<ActionResult> DeleteSeller(int id)
         {
             if (id < 1)
             {
@@ -150,6 +193,16 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
             if (clsSellerBusiness.DeleteSeller(id))
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Seller",
+                    targetId: seller.sellerID.ToString(),
+                    details: "Admin Deleted Seller."
+                );
                 return Ok($"Seller with ID {id} has been deleted.");
             }
 

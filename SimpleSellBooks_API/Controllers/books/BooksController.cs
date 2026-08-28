@@ -2,17 +2,28 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using SimpleSellBooks_API.helper_methods;
+using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.books;
 using SimpleSellBooks_DataLayer.books;
+using System.Net;
 using System.Security.Claims;
 
 namespace SimpleSellBooks_API.Controllers.books
 {
+
     [Authorize]
     [Route("api/Books")]
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private readonly ISecurityAuditService _auditService;
+
+        public BooksController(ISecurityAuditService auditService)
+        {
+            _auditService = auditService;
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet("All", Name = "GetAllBooks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,13 +63,12 @@ namespace SimpleSellBooks_API.Controllers.books
             return Ok(book.bookDTO);
         }
 
-
         [Authorize(Roles = "Admin, Seller")]
         [HttpPost(Name = "AddNewBook")]
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsBookDTO> AddNewBook(clsBookDTO newBookDTO)
+        public async Task<ActionResult<clsBookDTO>> AddNewBook(clsBookDTO newBookDTO)
         {
             if (newBookDTO == null || newBookDTO.sellerId < 0 || 
                 newBookDTO.categoryId < 0 || string.IsNullOrEmpty(newBookDTO.title) || 
@@ -82,6 +92,16 @@ namespace SimpleSellBooks_API.Controllers.books
 
             if (book.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status201Created,
+                    targetType: "Book",
+                    targetId: book.bookId.ToString(),
+                    details: $"Book Added By{clsHelperMethods.GetCurrentRole(HttpContext)}."
+                );
                 return CreatedAtRoute("GetBookById",
                     new { bookId = book.bookId },
                     book.bookDTO);
@@ -97,7 +117,7 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsBookDTO> UpdateBook(int id, clsBookDTO updatedBookDTO)
+        public async Task<ActionResult<clsBookDTO>> UpdateBook(int id, clsBookDTO updatedBookDTO)
         {
             if (id < 1)
             {
@@ -131,6 +151,16 @@ namespace SimpleSellBooks_API.Controllers.books
 
             if (book.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Book",
+                    targetId: book.bookId.ToString(),
+                    details: $"Book Was Updated By {clsHelperMethods.GetCurrentRole(HttpContext)}."
+                );
                 return Ok(book.bookDTO);
             }
 
@@ -144,7 +174,7 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeleteBook(int id)
+        public async Task<ActionResult> DeleteBook(int id)
         {
             
             if (id < 1)
@@ -161,6 +191,16 @@ namespace SimpleSellBooks_API.Controllers.books
 
             if (clsBookBusiness.DeleteBook(id))
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Book",
+                    targetId: book.bookId.ToString(),
+                    details: $"Book Was Deleted By {clsHelperMethods.GetCurrentRole(HttpContext)}."
+                );
                 return Ok($"Book with ID {id} has been deleted.");
             }
 

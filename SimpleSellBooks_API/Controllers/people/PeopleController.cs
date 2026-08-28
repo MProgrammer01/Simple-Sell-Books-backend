@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using SimpleSellBooks_API.helper_methods;
+using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.people;
 using SimpleSellBooks_DataLayer.people;
 using System.Security.Claims;
@@ -13,6 +15,13 @@ namespace SimpleSellBooks_API.Controllers.people
     [ApiController]
     public class PeopleController : ControllerBase
     {
+        private readonly ISecurityAuditService _auditService;
+
+        public PeopleController(ISecurityAuditService auditService)
+        {
+            _auditService = auditService;
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpGet("All", Name = "GetAllPeople")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -81,7 +90,7 @@ namespace SimpleSellBooks_API.Controllers.people
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<clsPersonDTO> AddNewPerson(clsSignUpDTO newPersonDTO)
+        public async Task<ActionResult<clsPersonDTO>> AddNewPerson(clsSignUpDTO newPersonDTO)
         {
             if (newPersonDTO == null || string.IsNullOrEmpty(newPersonDTO.fullName) || 
                 string.IsNullOrEmpty(newPersonDTO.email) || 
@@ -100,6 +109,16 @@ namespace SimpleSellBooks_API.Controllers.people
 
             if (person.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status201Created,
+                    targetType: "Person",
+                    targetId: person.personID.ToString(),
+                    details: "Admin Added New Person."
+                );
                 return CreatedAtRoute("GetPersonByID",
                     new { personID = person.personID },
                     person.personDTO);
@@ -115,7 +134,7 @@ namespace SimpleSellBooks_API.Controllers.people
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<clsPersonDTO> UpdatePerson(int id, clsUpdatePersonDTO updatedPersonDTO)
+        public async Task<ActionResult<clsPersonDTO>> UpdatePerson(int id, clsUpdatePersonDTO updatedPersonDTO)
         {
             if (id < 1)
             {
@@ -144,6 +163,16 @@ namespace SimpleSellBooks_API.Controllers.people
 
             if (person.Save())
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Person",
+                    targetId: person.personID.ToString(),
+                    details: "Admin Updated Person."
+                );
                 return Ok(person.personDTO);
             }
 
@@ -157,7 +186,7 @@ namespace SimpleSellBooks_API.Controllers.people
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult DeletePerson(int id)
+        public async Task<ActionResult> DeletePerson(int id)
         {
             if (id < 1)
             {
@@ -173,6 +202,16 @@ namespace SimpleSellBooks_API.Controllers.people
 
             if (clsPersonBusiness.DeletePerson(id))
             {
+                await _auditService.LogAsync(
+                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
+                    HttpContext,
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
+                    action: SecurityAction.Delete,
+                    statusCode: StatusCodes.Status200OK,
+                    targetType: "Person",
+                    targetId: person.personID.ToString(),
+                    details: "Admin Deleted Person."
+                );
                 return Ok($"Person with ID {id} has been deleted.");
             }
 

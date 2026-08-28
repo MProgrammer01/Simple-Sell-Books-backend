@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SimpleSellBooks_API.DTOs.Auth;
+using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.people;
 using SimpleSellBooks_DataLayer.people;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,6 +20,13 @@ namespace SimpleSellBooks_API.Controllers.Authentication
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly ISecurityAuditService _auditService;
+
+        public AuthController(ISecurityAuditService auditService)
+        {
+            _auditService = auditService;
+        }
+
         // This endpoint handles user login.
         // It verifies credentials and returns a JWT token if login succeeds.
         [AllowAnonymous]
@@ -27,7 +35,7 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult Login([FromBody] clsSignInDTO signInDTO)
+        public async Task<IActionResult> Login([FromBody] clsSignInDTO signInDTO)
         {
             // Step 1: Find the person by email from DB.
             // Email acts as the unique login identifier.
@@ -36,7 +44,18 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             // If no student is found with the given email,
             // return 401 Unauthorized without revealing which field was wrong.
             if (signInResp == null)
+            {
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.LoginFailed.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status401Unauthorized,
+                    details: "Invalid credentials",
+                    action: SecurityAction.Login
+                );
+                
                 return Unauthorized("Invalid credentials");
+            }
+               
 
 
             try
@@ -98,6 +117,14 @@ namespace SimpleSellBooks_API.Controllers.Authentication
 
                 if (!isUpdated)
                 {
+                    await _auditService.LogAsync(
+                        SecurityEventTypeAndAction.RefreshFailed.ToString(),
+                        HttpContext,
+                        userId: signInResp.personID,
+                        statusCode: StatusCodes.Status500InternalServerError,
+                        details: "Failed to update refresh token.",
+                        action: SecurityAction.Login);
+
                     return StatusCode(
                         StatusCodes.Status500InternalServerError,
                         "Failed to update refresh token."
@@ -116,34 +143,81 @@ namespace SimpleSellBooks_API.Controllers.Authentication
                 Console.WriteLine("Error : Login Auth " + ex.Message);
             }
 
+            await _auditService.LogAsync(
+                SecurityEventTypeAndAction.LoginSucceeded.ToString(),
+                HttpContext,
+                userId: signInResp.personID,
+                statusCode: StatusCodes.Status200OK,
+                details: "Login Success",
+                action: SecurityAction.Login
+            );
+
             // Step 7: Return the serialized JWT token to the client.
             // The client will send this token with future requests.
             return Ok(signInResp);
         }
 
 
-       [HttpPost("refresh")]
+        [HttpPost("refresh")]
         [EnableRateLimiting("AuthPolicy")]
-        public IActionResult Refresh([FromBody] clsRefreshRequest request)
+        public async Task<IActionResult> Refresh([FromBody] clsRefreshRequest request)
         {
             clsSignInResponseDTO? refreshTokenResponse = clsPersonBusiness.RefreshTokenResponce(request.Email);
 
             clsTokenResponse tokenResponse = new clsTokenResponse();
 
             if (refreshTokenResponse == null)
+            {
+                await _auditService.LogAsync(
+                   SecurityEventTypeAndAction.LoginFailed.ToString(),
+                   HttpContext,
+                   statusCode: StatusCodes.Status401Unauthorized,
+                   details: "Invalid refresh request",
+                   action: SecurityAction.RefreshToken
+                );
                 return Unauthorized("Invalid refresh request");
+            }
+               
 
             if (refreshTokenResponse.RefreshTokenRevokedAt != null)
-                return Unauthorized("Refresh token is revoked");
+            {
+                await _auditService.LogAsync(
+                   SecurityEventTypeAndAction.LoginFailed.ToString(),
+                   HttpContext,
+                   statusCode: StatusCodes.Status401Unauthorized,
+                   details: "Refresh token is revoked",
+                   action: SecurityAction.RefreshToken
+                );
+                return Unauthorized("Refresh token is revoked"); 
+
+            }
 
             if (refreshTokenResponse.RefreshTokenExpirationDate == null || 
                 refreshTokenResponse.RefreshTokenExpirationDate <= DateTime.UtcNow)
-                return Unauthorized("Refresh token expired");
+            {
+                await _auditService.LogAsync(
+                   SecurityEventTypeAndAction.LoginFailed.ToString(),
+                   HttpContext,
+                   statusCode: StatusCodes.Status401Unauthorized,
+                   details: "Refresh token expired",
+                   action: SecurityAction.RefreshToken
+                );
+                return Unauthorized("Refresh token expired"); 
+            }
 
             bool refreshValid = BCrypt.Net.BCrypt.Verify(request.RefreshToken, refreshTokenResponse.RefreshTokenHash);
             
             if (!refreshValid)
+            {
+                await _auditService.LogAsync(
+                   SecurityEventTypeAndAction.LoginFailed.ToString(),
+                   HttpContext,
+                   statusCode: StatusCodes.Status401Unauthorized,
+                   details: "Invalid refresh token",
+                   action: SecurityAction.RefreshToken
+                );
                 return Unauthorized("Invalid refresh token");
+            }
 
             // Issue NEW access token (same claims & signing settings as login)
             try
@@ -204,6 +278,13 @@ namespace SimpleSellBooks_API.Controllers.Authentication
 
                 if (!refreshTokenIsUpdated)
                 {
+                    await _auditService.LogAsync(
+                       SecurityEventTypeAndAction.LoginFailed.ToString(),
+                       HttpContext,
+                       statusCode: StatusCodes.Status500InternalServerError,
+                       details: "Failed to update refresh token.",
+                       action: SecurityAction.RefreshToken
+                    );
                     return StatusCode(
                         StatusCodes.Status500InternalServerError,
                         "Failed to update refresh token."
@@ -221,6 +302,16 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             {
                 Console.WriteLine("Error : Refresh Auth " + ex.Message);
             }
+
+            await _auditService.LogAsync(
+                SecurityEventTypeAndAction.LoginSucceeded.ToString(),
+                HttpContext,
+                userId: refreshTokenResponse.personID,
+                statusCode: StatusCodes.Status200OK,
+                details: "Refresh Success",
+                action: SecurityAction.RefreshToken
+            );
+
             return Ok(tokenResponse);
         }
         private static string GenerateRefreshToken()

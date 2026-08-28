@@ -7,9 +7,9 @@ using SimpleSellBooks_DataLayer.conditions;
 namespace SimpleSellBooks_API.Controllers.conditions
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/Conditions")]
     [ApiController]
-    public class conditionsController : ControllerBase
+    public class ConditionsController : ControllerBase
     {
         [Authorize(Roles = "Admin, Seller")]
         [HttpGet("All", Name = "GetAllConditions")]
