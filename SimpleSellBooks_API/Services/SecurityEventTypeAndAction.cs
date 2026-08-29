@@ -5,6 +5,9 @@
         LoginSucceeded,
         LoginFailed,
 
+        SignUpSucceeded,
+        SignUpFailed,
+
         RefreshSucceeded,
         RefreshFailed,
 

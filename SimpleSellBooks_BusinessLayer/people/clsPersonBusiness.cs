@@ -212,5 +212,10 @@ namespace SimpleSellBooks_BusinessLayer.people
                 refreshToken
             );
         }
+
+        public static bool IsPersonExistsByEmail(string email)
+        {
+            return clsPersonData.IsPersonExistsByEmail(email);
+        }
     }
 }

@@ -164,7 +164,6 @@ namespace SimpleSellBooks_DataLayer.sellers
             return isDeleted;
         }
 
-
         public static clsSellerDTO GetSellerByID(int sellerID)
         {
             clsSellerDTO sellerDTO = new clsSellerDTO();
@@ -205,5 +204,57 @@ namespace SimpleSellBooks_DataLayer.sellers
 
             return sellerDTO;
         }
+
+        public static bool SellerSignUp(clsSignUPSellerDTO sellerDTO)
+        {
+            bool isSignedIN = false;
+
+            string SP_SellerSignUp = "SP_SellerSignUp";
+
+            SqlCommand command = new SqlCommand(SP_SellerSignUp, connectionToDB);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            //person data
+            command.Parameters.AddWithValue("@fullName", sellerDTO.fullName);
+            command.Parameters.AddWithValue("@email", sellerDTO.email);
+            command.Parameters.AddWithValue("@passwordHash", sellerDTO.password);
+            command.Parameters.AddWithValue("@phone", sellerDTO.phone ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@addressPerson", sellerDTO.addressPerson ?? (object)DBNull.Value);
+
+            //seller data
+            command.Parameters.AddWithValue("@storeName", sellerDTO.storeName);
+            command.Parameters.AddWithValue("@logoStore", sellerDTO.logoStore ?? (object)DBNull.Value);
+
+            SqlParameter returnParameter = new SqlParameter
+            {
+                ParameterName = "@ReturnValue",
+                Direction = ParameterDirection.ReturnValue
+            };
+
+            command.Parameters.Add(returnParameter);
+
+            try
+            {
+                connectionToDB.Open();
+
+                command.ExecuteNonQuery();
+
+                isSignedIN = Convert.ToInt32(returnParameter.Value) == 1;
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: SellerSignUp Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return isSignedIN;
+
+        }
+
     }
 }

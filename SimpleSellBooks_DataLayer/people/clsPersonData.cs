@@ -259,7 +259,7 @@ namespace SimpleSellBooks_DataLayer.people
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error GetPersonByEmail Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error SignInResponse Data " + ex.Message);
             }
             finally
             {
@@ -355,6 +355,41 @@ namespace SimpleSellBooks_DataLayer.people
                 connectionToDB.Close();
             }
             return refreshTokenIsUpdated;
+        }
+
+        public static bool IsPersonExistsByEmail(string email)
+        {
+            bool isPersonExist = false;
+
+            string SP_GetSellerByID = "SP_ExistingPersonByEmail";
+
+            SqlCommand command = new SqlCommand(SP_GetSellerByID, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@email", email);
+
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    isPersonExist = true;
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error IsPersonExistsByEmail Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return isPersonExist;
         }
     }
 }

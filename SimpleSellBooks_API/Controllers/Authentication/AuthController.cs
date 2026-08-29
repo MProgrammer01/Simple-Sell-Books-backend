@@ -7,7 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using SimpleSellBooks_API.DTOs.Auth;
 using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.people;
+using SimpleSellBooks_BusinessLayer.sellers;
 using SimpleSellBooks_DataLayer.people;
+using SimpleSellBooks_DataLayer.sellers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -160,6 +162,9 @@ namespace SimpleSellBooks_API.Controllers.Authentication
 
         [HttpPost("refresh")]
         [EnableRateLimiting("AuthPolicy")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Refresh([FromBody] clsRefreshRequest request)
         {
             clsSignInResponseDTO? refreshTokenResponse = clsPersonBusiness.RefreshTokenResponce(request.Email);
@@ -320,6 +325,60 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(bytes);
             return Convert.ToBase64String(bytes);
+        }
+
+        [HttpPost("signup")]
+        [EnableRateLimiting("AuthPolicy")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SignUp([FromBody] clsSignUPSellerDTO signUpDTO)
+        {
+            // Check if email already exists
+            if (clsPersonBusiness.IsPersonExistsByEmail(signUpDTO.email))
+            {
+                await _auditService.LogAsync(
+                       SecurityEventTypeAndAction.SignUpFailed.ToString(),
+                       HttpContext,
+                       statusCode: StatusCodes.Status409Conflict,
+                       details: "Email already exists.",
+                       action: SecurityAction.RefreshToken
+                    );
+                return Conflict("Email already exists.");
+            }
+
+
+            // Create Person + Seller
+            bool isCreated = clsSellerBusiness.SignUp(signUpDTO);
+
+            if (!isCreated)
+            {
+                await _auditService.LogAsync(
+                       SecurityEventTypeAndAction.SignUpFailed.ToString(),
+                       HttpContext,
+                       statusCode: StatusCodes.Status500InternalServerError,
+                       details: "Failed to SignUp.",
+                       action: SecurityAction.RefreshToken
+                    );
+                return StatusCode(
+                        StatusCodes.Status500InternalServerError,
+                        "Failed to SignUp."
+                    );
+            }
+
+            await _auditService.LogAsync(
+                SecurityEventTypeAndAction.SignUpSucceeded.ToString(),
+                HttpContext,
+                //userId: signInResp.personID,
+                statusCode: StatusCodes.Status201Created,
+                details: "SignUp Success",
+                action: SecurityAction.Login
+            );
+
+            return StatusCode(
+                StatusCodes.Status201Created,
+                "Account created successfully."
+            );
         }
 
     }

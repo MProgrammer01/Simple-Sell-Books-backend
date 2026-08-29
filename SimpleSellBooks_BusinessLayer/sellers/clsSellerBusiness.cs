@@ -25,7 +25,8 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         {
             get
             {
-                return new clsSellerDTO(this.sellerID, this.personID, this.storeName, this.logoStore);
+                return new clsSellerDTO(this.sellerID, 
+                    this.personID, this.storeName, this.logoStore);
             }
         }
 
@@ -112,10 +113,18 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         }
 
 
+        public static bool SignUp(clsSignUPSellerDTO signUPSellerDTO)
+        {
+            signUPSellerDTO.password = BCrypt.Net.BCrypt.HashPassword(signUPSellerDTO.password);
+
+            return clsSellerData.SellerSignUp(signUPSellerDTO);
+        }
 
         public static bool DeleteSeller(int sellerID)
         {
             return clsSellerData.DeleteSeller(sellerID);
         }
+
+
     }
 }
