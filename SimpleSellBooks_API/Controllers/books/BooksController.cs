@@ -41,7 +41,52 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        [Authorize(Roles = "Admin, Seller")]
+        [HttpGet("GetAllBooksBySellerID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<clsBookDTO>>> GetAllBooksBySellerID(int sellerID,
+                [FromServices] IAuthorizationService authorizationService)
+        {
+            if (sellerID < 1)
+            {
+                return BadRequest($"Not accepted bookId {sellerID}");
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        sellerID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "Seller is not authorized to access this book for finding.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: sellerID.ToString(),
+                    targetType: "Book",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            IEnumerable<clsBookDTO> bookList = clsBookBusiness.GetAllBooksBySellerID(sellerID);
+
+            if (!bookList.Any())
+            {
+                return NotFound("No Books Found!");
+            }
+
+            return Ok(bookList);
+        }
+
+
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -146,7 +191,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        [Authorize(Roles = "Admin, Seller")]
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpPut("UpdateBookByID")]
         [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -228,7 +273,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        [Authorize(Roles = "Admin, Seller")]
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpDelete("DeleteBookByID")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
