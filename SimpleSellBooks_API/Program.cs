@@ -111,7 +111,7 @@ builder.Services.AddScoped<IAuthorizationMiddlewareResultHandler>(sp =>
     });
 // Register authorization services.
 // This enables attributes like [Authorize] and role-based authorization.
-builder.Services.AddAuthorization();
+//builder.Services.AddAuthorization();
 
 // ===============================
 // RateLimiting Configuration
@@ -128,7 +128,7 @@ builder.Services.AddRateLimiter(options =>
                 partitionKey: "global",
                 factory: _ => new SlidingWindowRateLimiterOptions
                 {
-                    PermitLimit = 5,
+                    PermitLimit = 100,
                     Window = TimeSpan.FromMinutes(1),
                     SegmentsPerWindow = 6,
                     QueueLimit = 0

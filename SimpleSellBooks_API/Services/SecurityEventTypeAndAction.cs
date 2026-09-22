@@ -31,6 +31,8 @@
 
         Delete,
 
+        Find,
+
         Update,
 
         Logout,
