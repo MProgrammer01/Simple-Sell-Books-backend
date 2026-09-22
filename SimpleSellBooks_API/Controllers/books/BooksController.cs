@@ -42,7 +42,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindByBookId/{bookId}", Name = "GetBookById")]
+        [HttpGet("FindBookById", Name = "GetBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,7 +64,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpPost(Name = "AddNewBook")]
+        [HttpPost("AddNewBook")]
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -112,7 +112,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpPut("{id}", Name = "UpdateBook")]
+        [HttpPut("UpdateBookByID")]
         [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -169,7 +169,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpDelete("{id}", Name = "DeleteBook")]
+        [HttpDelete("DeleteBookByID")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

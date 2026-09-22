@@ -25,10 +25,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("StoreBooksApiCorsPolicy", policy =>
     {
         policy
-            .WithOrigins(
-                "https://localhost:7217",
-                "http://localhost:5215"
-            )
+            //.WithOrigins(
+            //    "https://localhost:7217",
+            //    "http://localhost:5215",
+            //)
+            .SetIsOriginAllowed(origin =>
+                new Uri(origin).Host == "localhost")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
