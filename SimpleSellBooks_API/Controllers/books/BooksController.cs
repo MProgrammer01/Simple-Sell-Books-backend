@@ -25,7 +25,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("All", Name = "GetAllBooks")]
+        [HttpGet("GetAllBooks")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<clsBookDTO>> GetAllBooks()
@@ -42,7 +42,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindBookById", Name = "GetBookById")]
+        [HttpGet("FindBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
