@@ -46,17 +46,17 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<clsBookDTO>>> GetAllBooksBySellerID(int sellerID,
+        public async Task<ActionResult<IEnumerable<clsBookDTO>>> GetAllBooksByPersonID(int personID,
                 [FromServices] IAuthorizationService authorizationService)
         {
-            if (sellerID < 1)
+            if (personID < 1)
             {
-                return BadRequest($"Not accepted bookId {sellerID}");
+                return BadRequest($"Not accepted bookId {personID}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        sellerID,
+                        personID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -68,14 +68,14 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for finding.",
                     action: SecurityAction.AccessDenied,
-                    targetId: sellerID.ToString(),
+                    targetId: personID.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
                 return Forbid();
             } // 403
 
-            IEnumerable<clsBookDTO> bookList = clsBookBusiness.GetAllBooksBySellerID(sellerID);
+            IEnumerable<clsBookDTO> bookList = clsBookBusiness.GetAllBooksByPersonID(personID);
 
             if (!bookList.Any())
             {

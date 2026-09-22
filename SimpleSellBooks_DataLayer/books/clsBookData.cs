@@ -68,17 +68,17 @@ namespace SimpleSellBooks_DataLayer.books
             return booksList;
         }
 
-        public static IEnumerable<clsBookDTO> GetAllBooksBySellerID(int sellerID)
+        public static IEnumerable<clsBookDTO> GetAllBooksByPersonID(int personID)
         {
             List<clsBookDTO> booksList = new List<clsBookDTO>();
 
-            string SP_GetAllBooksBySellerID = "SP_GetAllBooksBySellerID";
+            string SP_GetAllBooksByPersonID = "SP_GetAllBooksByPersonID";
 
-            SqlCommand command = new SqlCommand(SP_GetAllBooksBySellerID, connectionToDB);
+            SqlCommand command = new SqlCommand(SP_GetAllBooksByPersonID, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.AddWithValue("@sellerID", sellerID);
+            command.Parameters.AddWithValue("@personID", personID);
 
 
             try
