@@ -102,32 +102,35 @@ namespace SimpleSellBooks_DataLayer.books
                 // Move to Result Set 2: books
                 if (reader.NextResult())
                 {
-                    int BookId = (int)reader["bookID"];
-                    int SellerId = (int)reader["sellerID"];
-                    int CategoryId = (int)reader["categoryID"];
-                    string Title = (string)reader["title"];
-                    string Author = (string)reader["author"];
-                    string? BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
-                                           (string)reader["bookDescription"];
-                    decimal Price = (decimal)reader["price"];
-                    int Stock = (int)reader["stock"];
-                    int ConditionId = (int)reader["conditionID"];
-                    string? CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
-                                            (string)reader["coverImg"];
-                    int StatusId = (int)reader["statusID"];
-                    DateTime CreatedAt = (DateTime)reader["createdAt"];
-                    DateTime UpdatedAt = (DateTime)reader["updatedAt"];
+                    while (reader.Read())
+                    {
+                        int BookId = (int)reader["bookID"];
+                        int SellerId = (int)reader["sellerID"];
+                        int CategoryId = (int)reader["categoryID"];
+                        string Title = (string)reader["title"];
+                        string Author = (string)reader["author"];
+                        string? BookDescription = reader.IsDBNull(reader.GetOrdinal("bookDescription")) ? null :
+                                               (string)reader["bookDescription"];
+                        decimal Price = (decimal)reader["price"];
+                        int Stock = (int)reader["stock"];
+                        int ConditionId = (int)reader["conditionID"];
+                        string? CoverImg = reader.IsDBNull(reader.GetOrdinal("coverImg")) ? null :
+                                                (string)reader["coverImg"];
+                        int StatusId = (int)reader["statusID"];
+                        DateTime CreatedAt = (DateTime)reader["createdAt"];
+                        DateTime UpdatedAt = (DateTime)reader["updatedAt"];
 
-                    booksList.Add(new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
-                        BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
+                        booksList.Add(new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                            BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
 
+                    }
                 }
                 reader.Close();
             }
 
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error: GetAllBooks Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error: GetAllBooksByPersonID Data " + personID + " " + ex.Message);
             }
             finally
             {
