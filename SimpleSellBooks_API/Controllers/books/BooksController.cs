@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using SimpleSellBooks_API.helper_methods;
@@ -46,9 +47,21 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<clsBookDTO>>> GetAllBooksByPersonID(
-                [FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<clsPaginatedBooksDTO>> GetAllBooksByPersonID(
+                [FromServices] IAuthorizationService authorizationService,
+                int pageNumber,
+                int pageSize)
         {
+            if (pageNumber < 1)
+            {
+                return BadRequest("Page number must be greater than 0.");
+            }
+
+            if (pageSize < 1 || pageSize > 100)
+            {
+                return BadRequest("Page size must be between 1 and 100.");
+            }
+
             int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
             if (personID < 1)
@@ -77,14 +90,15 @@ namespace SimpleSellBooks_API.Controllers.books
                 return Forbid();
             } // 403
 
-            IEnumerable<clsBookDTO> bookList = clsBookBusiness.GetAllBooksByPersonID(personID);
+            clsPaginatedBooksDTO result = clsBookBusiness.GetAllBooksByPersonID(
+                personID, pageNumber, pageSize);
 
-            if (!bookList.Any())
+            if (result == null || !result.books.Any())
             {
                 return NotFound("No Books Found!");
             }
 
-            return Ok(bookList);
+            return Ok(result);
         }
 
 

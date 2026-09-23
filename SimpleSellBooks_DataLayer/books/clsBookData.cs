@@ -68,9 +68,13 @@ namespace SimpleSellBooks_DataLayer.books
             return booksList;
         }
 
-        public static IEnumerable<clsBookDTO> GetAllBooksByPersonID(int personID)
+        public static clsPaginatedBooksDTO GetAllBooksByPersonID(int personID, 
+            int pageNumber,
+            int pageSize)
         {
             List<clsBookDTO> booksList = new List<clsBookDTO>();
+
+            int totalCount = 0;
 
             string SP_GetAllBooksByPersonID = "SP_GetAllBooksByPersonID";
 
@@ -79,6 +83,8 @@ namespace SimpleSellBooks_DataLayer.books
             command.CommandType = CommandType.StoredProcedure;
 
             command.Parameters.AddWithValue("@personID", personID);
+            command.Parameters.AddWithValue("@pageNumber", pageNumber);
+            command.Parameters.AddWithValue("@pageSize", pageSize);
 
 
             try
@@ -87,7 +93,14 @@ namespace SimpleSellBooks_DataLayer.books
 
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                // Result Set 1: totalCount
+                if (reader.Read())
+                {
+                    totalCount = (int)reader["totalCount"];
+                }
+
+                // Move to Result Set 2: books
+                if (reader.NextResult())
                 {
                     int BookId = (int)reader["bookID"];
                     int SellerId = (int)reader["sellerID"];
@@ -120,7 +133,7 @@ namespace SimpleSellBooks_DataLayer.books
             {
                 connectionToDB.Close();
             }
-            return booksList;
+            return new clsPaginatedBooksDTO(booksList, totalCount);
         }
 
 

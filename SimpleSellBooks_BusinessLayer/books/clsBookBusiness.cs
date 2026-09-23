@@ -143,9 +143,11 @@ namespace SimpleSellBooks_BusinessLayer.books
             return clsBookData.GetAllBooks();
         }
 
-        public static IEnumerable<clsBookDTO> GetAllBooksByPersonID(int personID)
+        public static clsPaginatedBooksDTO GetAllBooksByPersonID(int personID,
+            int pageNumber,
+            int pageSize)
         {
-            return clsBookData.GetAllBooksByPersonID(personID);
+            return clsBookData.GetAllBooksByPersonID(personID, pageNumber, pageSize);
         }
 
 
