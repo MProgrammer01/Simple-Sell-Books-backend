@@ -92,17 +92,17 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<clsBookDTO>> GetBookById(int bookId, int sellerID,
+        public async Task<ActionResult<clsBookDTO>> GetBookById(int bookId, int personID,
                 [FromServices] IAuthorizationService authorizationService)
         {
-            if (bookId < 1)
+            if (bookId < 1 || personID < 1)
             {
                 return BadRequest($"Not accepted bookId {bookId}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        sellerID,
+                        personID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -114,7 +114,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for finding.",
                     action: SecurityAction.AccessDenied,
-                    targetId: sellerID.ToString(),
+                    targetId: personID.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
@@ -201,7 +201,7 @@ namespace SimpleSellBooks_API.Controllers.books
         public async Task<ActionResult<clsBookDTO>> UpdateBook(int id,
                 [FromServices] IAuthorizationService authorizationService, clsBookDTO updatedBookDTO)
         {
-            if (id < 1)
+            if (id < 1 || updatedBookDTO.sellerId < 1)
             {
                 return BadRequest($"Not accepted ID {id}");
             }
@@ -279,18 +279,18 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteBook(int id, int sellerID,
+        public async Task<ActionResult> DeleteBook(int id, int personID,
                 [FromServices] IAuthorizationService authorizationService)
         {
             
-            if (id < 1)
+            if (id < 1 || personID < 1)
             {
                 return BadRequest($"Not accepted ID {id}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        sellerID,
+                        personID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -302,7 +302,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for deleting.",
                     action: SecurityAction.AccessDenied,
-                    targetId: sellerID.ToString(),
+                    targetId: personID.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
