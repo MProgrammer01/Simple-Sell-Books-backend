@@ -66,7 +66,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
             if (personID < 1)
             {
-                return BadRequest($"Not accepted bookId {personID}");
+                return BadRequest($"Not accepted personID {personID}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
@@ -111,11 +111,18 @@ namespace SimpleSellBooks_API.Controllers.books
         public async Task<ActionResult<clsBookDTO>> GetBookById(int bookId,
                 [FromServices] IAuthorizationService authorizationService)
         {
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
-            if (bookId < 1 || personID < 1)
+           
+            if (bookId < 1)
             {
                 return BadRequest($"Not accepted bookId {bookId}");
+            }
+
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted personID {personID}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
