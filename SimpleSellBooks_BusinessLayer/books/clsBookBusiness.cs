@@ -18,7 +18,7 @@ namespace SimpleSellBooks_BusinessLayer.books
         enMode Mode = enMode.AddNewBook;
 
         public int bookId { get; set; }
-        public int sellerId { get; set; }
+        public int personId { get; set; }
         public int categoryId { get; set; }
         public string title { get; set; }
         public string author { get; set; }
@@ -42,8 +42,7 @@ namespace SimpleSellBooks_BusinessLayer.books
         {
             get
             {
-                return new clsBookDTO(this.bookId, 
-                    this.sellerId, this.categoryId, 
+                return new clsBookDTO(this.bookId, this.categoryId, 
                     this.title, this.author, this.bookDescription,
                     this.price, this.stock, this.conditionId, this.coverImg, 
                     this.statusId, this.createdAt, this.UpdatedAt);
@@ -56,7 +55,7 @@ namespace SimpleSellBooks_BusinessLayer.books
             get
             {
                 return new clsBookDTO(
-                    this.sellerId,
+                    this.personId,
                     this.categoryId,
                     this.title,
                     this.author,
@@ -92,7 +91,7 @@ namespace SimpleSellBooks_BusinessLayer.books
         public clsBookBusiness()
         {
             this.bookId = 0;
-            this.sellerId = 0;
+            this.personId = 0;
             this.categoryId = 0;
             this.title = string.Empty;
             this.author = string.Empty;
@@ -113,11 +112,12 @@ namespace SimpleSellBooks_BusinessLayer.books
             Mode = enMode.AddNewBook;
         }
 
+        //Retrive
         clsBookBusiness(clsBookDTO bookDTO)
         {
             
             this.bookId = bookDTO.bookId;
-            this.sellerId = bookDTO.sellerId;
+            //this.personId = bookDTO.personId;
             this.categoryId = bookDTO.categoryId;
             this.title = bookDTO.title;
             this.author = bookDTO.author;
@@ -130,7 +130,7 @@ namespace SimpleSellBooks_BusinessLayer.books
             this.createdAt = bookDTO.createdAt;
             this.UpdatedAt = bookDTO.UpdatedAt;
 
-            this.sellerInfo = clsSellerBusiness.FindSeller(bookDTO.sellerId) ?? new clsSellerBusiness();
+            this.sellerInfo = clsSellerBusiness.FindSeller(bookDTO.personId) ?? new clsSellerBusiness();
             this.categorieInfo = clsCategorieBusiness.FindCategorie(bookDTO.categoryId) ?? new clsCategorieBusiness();
             this.conditionInfo = clsConditionBusiness.FindCondition(bookDTO.conditionId) ?? new clsConditionBusiness();
             this.statuseInfo = clsStatuseBusiness.FindStatuse(bookDTO.statusId) ?? new clsStatuseBusiness();

@@ -11,7 +11,7 @@ namespace SimpleSellBooks_DataLayer.books
     public class clsBookDTO
     {
         public int bookId { get; set; }
-        public int sellerId { get; set; }
+        public int personId { get; set; }
         public int categoryId { get; set; }
         public string title { get; set; }
         public string author { get; set; }
@@ -31,14 +31,13 @@ namespace SimpleSellBooks_DataLayer.books
         }
 
         //DTO Retrive Data
-        public clsBookDTO(int bookID, int sellerId,
+        public clsBookDTO(int bookID,
             int categoryId, string title, string author,
             string? description, decimal price, int stock, int conditionId,
             string? coverImg, int statusId, DateTime createdAt, 
             DateTime updatedAt)
         {
             bookId = bookID;
-            this.sellerId = sellerId;
             this.categoryId = categoryId;
             this.title = title;
             this.author = author;
@@ -53,12 +52,12 @@ namespace SimpleSellBooks_DataLayer.books
         }
 
         //DTO Add New
-        public clsBookDTO(int sellerId,
+        public clsBookDTO(int personId,
             int categoryId, string title, string author,
             string? description, decimal price, int stock, int conditionId,
             string? coverImg, int statusId)
         {
-            this.sellerId = sellerId;
+            this.personId = personId;
             this.categoryId = categoryId;
             this.title = title;
             this.author = author;

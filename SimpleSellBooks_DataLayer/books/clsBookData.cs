@@ -50,7 +50,7 @@ namespace SimpleSellBooks_DataLayer.books
                     DateTime CreatedAt = (DateTime)reader["createdAt"];
                     DateTime UpdatedAt = (DateTime)reader["updatedAt"];
 
-                    booksList.Add(new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                    booksList.Add(new clsBookDTO(BookId, CategoryId, Title, Author,
                         BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
                 
                 }
@@ -120,7 +120,7 @@ namespace SimpleSellBooks_DataLayer.books
                         DateTime CreatedAt = (DateTime)reader["createdAt"];
                         DateTime UpdatedAt = (DateTime)reader["updatedAt"];
 
-                        booksList.Add(new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                        booksList.Add(new clsBookDTO(BookId, CategoryId, Title, Author,
                             BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
 
                     }
@@ -149,7 +149,7 @@ namespace SimpleSellBooks_DataLayer.books
             SqlCommand command = new SqlCommand(SP_AddNewBook, connectionToDB);
 
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@sellerID", bookDTO.sellerId);
+            command.Parameters.AddWithValue("@personID", bookDTO.personId);
             command.Parameters.AddWithValue("@categoryID", bookDTO.categoryId);
             command.Parameters.AddWithValue("@title", bookDTO.title);
             command.Parameters.AddWithValue("@author", bookDTO.author);
@@ -301,7 +301,7 @@ namespace SimpleSellBooks_DataLayer.books
                     DateTime CreatedAt = (DateTime)reader["createdAt"];
                     DateTime UpdatedAt = (DateTime)reader["updatedAt"];
 
-                    bookDTO = new clsBookDTO(BookId, SellerId, CategoryId, Title, Author,
+                    bookDTO = new clsBookDTO(BookId, CategoryId, Title, Author,
                         BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt);
                 }
 

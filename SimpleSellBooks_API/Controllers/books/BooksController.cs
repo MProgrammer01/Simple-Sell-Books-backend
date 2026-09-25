@@ -173,9 +173,39 @@ namespace SimpleSellBooks_API.Controllers.books
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<clsBookDTO>> AddNewBook(clsBookDTO newBookDTO)
+        public async Task<ActionResult<clsBookDTO>> AddNewBook(clsBookDTO newBookDTO,
+            [FromServices] IAuthorizationService authorizationService)
         {
-            if (newBookDTO == null || newBookDTO.sellerId < 0 || 
+
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted personID {personID}");
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        personID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "Seller is not authorized to access this book for finding.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: personID.ToString(),
+                    targetType: "Book",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            if (newBookDTO == null || 
                 newBookDTO.categoryId < 0 || string.IsNullOrEmpty(newBookDTO.title) || 
                 string.IsNullOrEmpty(newBookDTO.author) || newBookDTO.price < 0 || 
                 newBookDTO.stock < 0 || newBookDTO.conditionId < 0 || newBookDTO.statusId < 0)
@@ -184,7 +214,7 @@ namespace SimpleSellBooks_API.Controllers.books
             }
 
             clsBookBusiness book = new clsBookBusiness();
-            book.sellerId = newBookDTO.sellerId;
+            book.personId = personID;
             book.categoryId = newBookDTO.categoryId;
             book.title = newBookDTO.title;
             book.author = newBookDTO.author;
@@ -226,11 +256,18 @@ namespace SimpleSellBooks_API.Controllers.books
         public async Task<ActionResult<clsBookDTO>> UpdateBook(int id,
                 [FromServices] IAuthorizationService authorizationService, clsBookDTO updatedBookDTO)
         {
+            
+            if (id < 1)
+            {
+                return BadRequest($"Not accepted Book ID {id}");
+            }
+
             int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
-            if (id < 1 || personID < 1)
+
+            if (personID < 1)
             {
-                return BadRequest($"Not accepted ID {id}");
+                return BadRequest($"Not accepted personID {personID}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
@@ -309,11 +346,18 @@ namespace SimpleSellBooks_API.Controllers.books
         public async Task<ActionResult> DeleteBook(int id,
                 [FromServices] IAuthorizationService authorizationService)
         {
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
-            if (id < 1 || personID < 1)
+            
+            if (id < 1)
             {
                 return BadRequest($"Not accepted ID {id}");
+            }
+
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted personID {personID}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
