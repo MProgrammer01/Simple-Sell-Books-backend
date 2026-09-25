@@ -103,7 +103,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         //[Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindBookById/{bookId}", Name = "GetBookById")]
+        [HttpGet("FindBookById", Name = "GetBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
