@@ -103,7 +103,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
 
         //[Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindBookById")]
+        [HttpGet("FindBookById/{bookId}", Name = "GetBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -168,7 +168,7 @@ namespace SimpleSellBooks_API.Controllers.books
             return Ok(book.bookDTO);
         }
 
-        [Authorize(Roles = "Admin, Seller")]
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpPost("AddNewBook")]
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
