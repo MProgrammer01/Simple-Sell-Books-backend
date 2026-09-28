@@ -24,7 +24,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("All", Name = "GetAllSellers")]
+        [HttpGet("GetAllSellers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<IEnumerable<clsSellerDTO>> GetAllSellers()
@@ -41,7 +41,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
 
         //[Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindBySellerID/{sellerID}", Name = "GetSellerByID")]
+        [HttpGet("FindSellerByID", Name = "GetSellerByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,7 +85,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost(Name = "AddNewSeller")]
+        [HttpPost("AddNewSeller")]
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,7 +125,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
 
         [Authorize(Roles = "Admin, Seller")]
-        [HttpPut("{id}", Name = "UpdateSeller")]
+        [HttpPut("UpdateSellerByID")]
         [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -172,7 +172,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
 
 
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}", Name = "DeleteSeller")]
+        [HttpDelete("DeleteSellerByID")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

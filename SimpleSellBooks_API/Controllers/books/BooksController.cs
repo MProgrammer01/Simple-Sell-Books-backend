@@ -343,6 +343,7 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> DeleteBook(int id,
                 [FromServices] IAuthorizationService authorizationService)
         {
