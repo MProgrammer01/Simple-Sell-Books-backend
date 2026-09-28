@@ -1,4 +1,5 @@
 ﻿using SimpleSellBooks_BusinessLayer.people;
+using SimpleSellBooks_DataLayer.people;
 using SimpleSellBooks_DataLayer.sellers;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_BusinessLayer.sellers
 {
-    public class clsSellerBusiness
+    public class clsSellerBusiness : clsPersonDTO
     {
         enum enMode { AddNewSeller = 1, UpdateSeller = 2 }
         enMode Mode = enMode.AddNewSeller;
 
         public int sellerID { get; set; }
-        public int personID { get; set; }
+        //public int personID { get; set; }
         public string storeName { get; set; }
         public string? logoStore { get; set; }
 
-        public clsPersonBusiness personInfo;
+        //public clsPersonBusiness personInfo;
 
 
         public clsSellerDTO sellerDTO
@@ -30,12 +31,28 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             }
         }
 
+        public clsSellerDTO sellerByPersonIDDTO
+        {
+            get
+            {
+                return new clsSellerDTO(
+                    this.sellerID,
+                    this.fullName,
+                    this.email,
+                    this.phone,
+                    this.addressPerson,
+                    this.role,
+                    this.storeName, this.logoStore);
+            }
+        }
+
 
         clsSellerDTO sellerUpdateDTO
         {
             get
             {
-                return new clsSellerDTO(this.sellerID, this.storeName, this.logoStore);
+                return new clsSellerDTO(this.sellerID, this.storeName,
+                    this.logoStore);
             }
         }
 
@@ -45,17 +62,32 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             this.personID = 0;
             this.storeName = string.Empty;
             this.logoStore = string.Empty;
-            this.personInfo = new clsPersonBusiness();
+            //this.personInfo = new clsPersonBusiness();
             Mode = enMode.AddNewSeller;
         }
 
-        clsSellerBusiness(clsSellerDTO sellerDTO)
+        clsSellerBusiness(int sellerID, int personID, string storeName, string? logoStore)
         {
-            this.sellerID = sellerDTO.sellerID;
-            this.personID = sellerDTO.personID;
-            this.storeName = sellerDTO.storeName;
-            this.logoStore = sellerDTO.logoStore;
-            this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
+            this.sellerID = sellerID;
+            this.personID = personID;
+            this.storeName = storeName;
+            this.logoStore = logoStore;
+            //this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
+            Mode = enMode.UpdateSeller;
+        }
+
+        clsSellerBusiness(string fullName,
+            string email, string? phone, string? addressPerson, string role,
+            string storeName, string? logoStore)
+        {
+            this.storeName = storeName;
+            this.logoStore = logoStore;
+            this.fullName = fullName;
+            this.email = email;
+            this.phone = phone;
+            this.addressPerson = addressPerson;
+            this.role = role;
+            //this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
             Mode = enMode.UpdateSeller;
         }
 
@@ -65,13 +97,27 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         }
 
 
-        public static clsSellerBusiness? FindSeller(int sellerID)
+        public static clsSellerBusiness? FindSellerByID(int sellerID)
         {
             clsSellerDTO sellerDTO = clsSellerData.GetSellerByID(sellerID);
 
             if (sellerDTO != null && sellerDTO.sellerID > 0)
             {
-                return new clsSellerBusiness(sellerDTO);
+                return new clsSellerBusiness(sellerDTO.sellerID, sellerDTO.personID, 
+                    sellerDTO.storeName, sellerDTO.logoStore);
+            }
+            return null;
+        }
+
+        public static clsSellerBusiness? FindSellerByPersonID(int personID)
+        {
+            clsSellerDTO sellerDTO = clsSellerData.GetSellerByPersonID(personID);
+
+            if (sellerDTO != null && sellerDTO.sellerID > 0)
+            {
+                return new clsSellerBusiness(sellerDTO.fullName, sellerDTO.email,
+                        sellerDTO.phone, sellerDTO.addressPerson, 
+                        sellerDTO.role, sellerDTO.storeName, sellerDTO.logoStore);
             }
             return null;
         }

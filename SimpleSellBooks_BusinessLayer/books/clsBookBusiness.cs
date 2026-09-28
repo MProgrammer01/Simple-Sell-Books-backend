@@ -130,7 +130,7 @@ namespace SimpleSellBooks_BusinessLayer.books
             this.createdAt = bookDTO.createdAt;
             this.UpdatedAt = bookDTO.UpdatedAt;
 
-            this.sellerInfo = clsSellerBusiness.FindSeller(bookDTO.personId) ?? new clsSellerBusiness();
+            this.sellerInfo = clsSellerBusiness.FindSellerByID(bookDTO.personId) ?? new clsSellerBusiness();
             this.categorieInfo = clsCategorieBusiness.FindCategorie(bookDTO.categoryId) ?? new clsCategorieBusiness();
             this.conditionInfo = clsConditionBusiness.FindCondition(bookDTO.conditionId) ?? new clsConditionBusiness();
             this.statuseInfo = clsStatuseBusiness.FindStatuse(bookDTO.statusId) ?? new clsStatuseBusiness();

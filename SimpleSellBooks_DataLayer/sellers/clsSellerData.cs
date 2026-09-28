@@ -205,6 +205,54 @@ namespace SimpleSellBooks_DataLayer.sellers
             return sellerDTO;
         }
 
+        public static clsSellerDTO GetSellerByPersonID(int personID)
+        {
+            clsSellerDTO sellerDTO = new clsSellerDTO();
+
+            string SP_GetSellerByPersonID = "SP_GetSellerByPersonID";
+
+            SqlCommand command = new SqlCommand(SP_GetSellerByPersonID, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@personID", personID);
+
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    int sellerID = (int)reader["sellerID"];
+                    string fullName = (string)reader["fullName"];
+                    string email = (string)reader["email"];
+                    string? phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? null :
+                                        (string)reader["phone"];
+                    string? addressPerson = reader.IsDBNull(reader.GetOrdinal("addressPerson")) ? null :
+                                        (string)reader["addressPerson"];
+                    string role = (string)reader["role"];
+                    string storeName = (string)reader["storeName"];
+                    string? logoStore = reader.IsDBNull(reader.GetOrdinal("logoStore")) ? null :
+                                        (string)reader["logoStore"];
+
+                    sellerDTO = new clsSellerDTO(sellerID, fullName, email,
+                        phone, addressPerson, role, storeName, logoStore);
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error GetSellerByPersonID Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return sellerDTO;
+        }
+
         public static bool SellerSignUp(clsSignUPSellerDTO sellerDTO)
         {
             bool isSignedIN = false;

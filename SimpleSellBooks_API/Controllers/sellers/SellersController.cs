@@ -54,7 +54,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
                 return BadRequest($"Not accepted sellerID {sellerID}");
             }
 
-            clsSellerBusiness? seller = clsSellerBusiness.FindSeller(sellerID);
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByID(sellerID);
 
             if (seller == null)
             {
@@ -82,6 +82,51 @@ namespace SimpleSellBooks_API.Controllers.sellers
             } // 403
 
             return Ok(seller.sellerDTO);
+        }
+
+        [HttpGet("FindSellerByPersonID", Name = "GetSellerByPersonID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<clsSellerDTO>> GetSellerByPersonID([FromServices] IAuthorizationService authorizationService)
+        {
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted personID {personID}");
+            }
+
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByPersonID(personID);
+
+            if (seller == null)
+            {
+                return NotFound($"Seller with personID {personID} not found.");
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        personID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "User is not authorized to access this seller.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: personID.ToString(),
+                    targetType: "Seller",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            return Ok(seller.sellerByPersonIDDTO);
         }
 
         [Authorize(Roles = "Admin")]
@@ -142,7 +187,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
                 return BadRequest("Invalid seller data.");
             }
 
-            clsSellerBusiness? seller = clsSellerBusiness.FindSeller(id);
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByID(id);
 
             if (seller == null)
             {
@@ -184,7 +229,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
                 return BadRequest($"Not accepted ID {id}");
             }
 
-            clsSellerBusiness? seller = clsSellerBusiness.FindSeller(id);
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByID(id);
 
             if (seller == null)
             {
