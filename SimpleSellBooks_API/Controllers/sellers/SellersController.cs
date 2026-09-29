@@ -89,6 +89,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
         public async Task<ActionResult<clsSellerDTO>> GetSellerByPersonID([FromServices] IAuthorizationService authorizationService)
         {
             int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
@@ -96,13 +97,6 @@ namespace SimpleSellBooks_API.Controllers.sellers
             if (personID < 1)
             {
                 return BadRequest($"Not accepted personID {personID}");
-            }
-
-            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByPersonID(personID);
-
-            if (seller == null)
-            {
-                return NotFound($"Seller with personID {personID} not found.");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
@@ -126,6 +120,15 @@ namespace SimpleSellBooks_API.Controllers.sellers
                 return Forbid();
             } // 403
 
+
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByPersonID(personID);
+
+            if (seller == null)
+            {
+                return NotFound($"Seller with personID {personID} not found.");
+            }
+
+            
             return Ok(seller.sellerByPersonIDDTO);
         }
 
@@ -169,30 +172,61 @@ namespace SimpleSellBooks_API.Controllers.sellers
         }
 
 
-        [Authorize(Roles = "Admin, Seller")]
+        //[Authorize(Roles = "Admin, Seller")]
         [HttpPut("UpdateSellerByID")]
         [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<clsSellerDTO>> UpdateSeller(int id, clsSellerDTO updatedSellerDTO)
+        public async Task<ActionResult<clsSellerDTO>> UpdateSeller(
+            [FromServices] IAuthorizationService authorizationService, 
+            clsSellerDTO updatedSellerDTO)
         {
-            if (id < 1)
+            if (updatedSellerDTO.personID < 1)
             {
-                return BadRequest($"Not accepted ID {id}");
+                return BadRequest($"Not accepted ID {updatedSellerDTO.personID}");
             }
 
-            if (updatedSellerDTO == null || string.IsNullOrEmpty(updatedSellerDTO.storeName))
+            
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        updatedSellerDTO.personID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "Seller is not authorized to access this seller for updating.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: updatedSellerDTO.personID.ToString(),
+                    targetType: "Book",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            if (updatedSellerDTO == null || 
+                string.IsNullOrEmpty(updatedSellerDTO.fullName) ||
+                string.IsNullOrEmpty(updatedSellerDTO.email) ||
+                string.IsNullOrEmpty(updatedSellerDTO.storeName))
             {
                 return BadRequest("Invalid seller data.");
             }
 
-            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByID(id);
+            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByPersonID(updatedSellerDTO.personID);
 
             if (seller == null)
             {
-                return NotFound($"Seller with ID {id} not found.");
+                return NotFound($"Seller with ID {updatedSellerDTO.personID} not found.");
             }
+            seller.fullName = updatedSellerDTO.fullName;
+            seller.email = updatedSellerDTO.email;
+            seller.phone = !string.IsNullOrEmpty(updatedSellerDTO.phone) ? updatedSellerDTO.phone : null;
+            seller.addressPerson = !string.IsNullOrEmpty(updatedSellerDTO.addressPerson) ? updatedSellerDTO.addressPerson : null;
 
             seller.storeName = updatedSellerDTO.storeName;
             seller.logoStore = !string.IsNullOrEmpty(updatedSellerDTO.logoStore) ? updatedSellerDTO.logoStore : null;
