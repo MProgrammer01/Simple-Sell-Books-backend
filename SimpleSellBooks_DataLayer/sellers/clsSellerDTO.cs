@@ -47,10 +47,16 @@ namespace SimpleSellBooks_DataLayer.sellers
         }
 
         //update
-        public clsSellerDTO(int sellerID, string storeName, string? logoStore)
+        public clsSellerDTO(string fullName,
+           string email, string? phone, string? addressPerson,
+           string storeName, string? logoStore)
         {
-            this.sellerID = sellerID;
-            //this.personID = personID;
+
+            this.personID = personID;
+            this.fullName = fullName;
+            this.email = email;
+            this.phone = phone;
+            this.addressPerson = addressPerson;
             this.storeName = storeName;
             this.logoStore = logoStore;
 
