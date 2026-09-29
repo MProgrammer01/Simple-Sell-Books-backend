@@ -66,7 +66,7 @@ namespace SimpleSellBooks_API.Controllers.books
 
             int currentPersonID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
-            if (currentPersonID < 1 || personID < 0)
+            if (currentPersonID < 1 || personID < 1)
             {
                 return BadRequest($"Not accepted personID {currentPersonID}");
             }
