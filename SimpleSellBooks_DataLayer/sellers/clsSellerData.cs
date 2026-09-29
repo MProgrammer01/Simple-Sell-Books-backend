@@ -105,8 +105,13 @@ namespace SimpleSellBooks_DataLayer.sellers
 
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.AddWithValue("@sellerID", sellerDTO.sellerID);
-            //command.Parameters.AddWithValue("@personID", sellerDTO.personID);
+            //command.Parameters.AddWithValue("@sellerID", sellerDTO.sellerID);
+
+            command.Parameters.AddWithValue("@personID", sellerDTO.personID);
+            command.Parameters.AddWithValue("@fullName", sellerDTO.fullName);
+            command.Parameters.AddWithValue("@email", sellerDTO.email);
+            command.Parameters.AddWithValue("@phone", sellerDTO.phone ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@addressPerson", sellerDTO.addressPerson ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@storeName", sellerDTO.storeName);
             command.Parameters.AddWithValue("@logoStore", sellerDTO.logoStore ?? (object)DBNull.Value);
 
