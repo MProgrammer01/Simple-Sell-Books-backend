@@ -7,6 +7,7 @@ using SimpleSellBooks_API.helper_methods;
 using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.books;
 using SimpleSellBooks_DataLayer.books;
+using System.Data;
 using System.Net;
 using System.Security.Claims;
 
@@ -49,6 +50,7 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<clsPaginatedBooksDTO>> GetAllBooksByPersonID(
                 [FromServices] IAuthorizationService authorizationService,
+                int personID,
                 int pageNumber,
                 int pageSize)
         {
@@ -62,28 +64,34 @@ namespace SimpleSellBooks_API.Controllers.books
                 return BadRequest("Page size must be between 1 and 100.");
             }
 
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+            int currentPersonID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
-            if (personID < 1)
+            if (currentPersonID < 1 || personID < 0)
             {
-                return BadRequest($"Not accepted personID {personID}");
+                return BadRequest($"Not accepted personID {currentPersonID}");
+            }
+
+            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
+
+            if (string.IsNullOrEmpty(role))
+            {
+                return BadRequest($"Not role found {role}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        personID,
+                        role.Equals("Seller") ? personID : currentPersonID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
             {
-
                 await _auditService.LogAsync(
                     SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
                     HttpContext,
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for finding.",
                     action: SecurityAction.AccessDenied,
-                    targetId: personID.ToString(),
+                    targetId: currentPersonID.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
@@ -184,9 +192,15 @@ namespace SimpleSellBooks_API.Controllers.books
                 return BadRequest($"Not accepted personID {personID}");
             }
 
+            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
+
+            if (string.IsNullOrEmpty(role))
+            {
+                return BadRequest($"Not role found {role}");
+            }
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        personID,
+                        role.Equals("Seller") ? newBookDTO.personId : personID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -205,7 +219,8 @@ namespace SimpleSellBooks_API.Controllers.books
                 return Forbid();
             } // 403
 
-            if (newBookDTO == null || 
+            if (newBookDTO == null ||
+                newBookDTO.personId < 0 || 
                 newBookDTO.categoryId < 0 || string.IsNullOrEmpty(newBookDTO.title) || 
                 string.IsNullOrEmpty(newBookDTO.author) || newBookDTO.price < 0 || 
                 newBookDTO.stock < 0 || newBookDTO.conditionId < 0 || newBookDTO.statusId < 0)
@@ -214,7 +229,7 @@ namespace SimpleSellBooks_API.Controllers.books
             }
 
             clsBookBusiness book = new clsBookBusiness();
-            book.personId = personID;
+            book.personId = newBookDTO.personId;
             book.categoryId = newBookDTO.categoryId;
             book.title = newBookDTO.title;
             book.author = newBookDTO.author;

@@ -39,8 +39,6 @@ builder.Services.AddCors(options =>
 // ===============================
 // JWT Authentication Configuration
 // ===============================
-
-
 // Register authentication services in the dependency injection container.
 // JwtBearerDefaults.AuthenticationScheme tells ASP.NET Core that
 // JWT Bearer authentication will be the default authentication method.
@@ -84,7 +82,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // ===============================
 // Authorization Configuration With DI
 // ===============================
-
 builder.Services.AddSingleton<IAuthorizationHandler, OwnerOrAdminHandler>();
 
 builder.Services.AddScoped<ISecurityAuditService, SecurityAuditService>();
@@ -109,6 +106,7 @@ builder.Services.AddScoped<IAuthorizationMiddlewareResultHandler>(sp =>
             defaultHandler,
             auditService);
     });
+
 // Register authorization services.
 // This enables attributes like [Authorize] and role-based authorization.
 //builder.Services.AddAuthorization();
@@ -238,7 +236,6 @@ builder.Services.AddControllers();
 // ===============================
 // Swagger Configuration
 // ===============================
-
 
 // Enables Swagger endpoint discovery.
 builder.Services.AddEndpointsApiExplorer();
