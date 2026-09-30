@@ -223,6 +223,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
             {
                 return NotFound($"Seller with ID {updatedSellerDTO.personID} not found.");
             }
+            seller.personID = updatedSellerDTO.personID;
             seller.fullName = updatedSellerDTO.fullName;
             seller.email = updatedSellerDTO.email;
             seller.phone = !string.IsNullOrEmpty(updatedSellerDTO.phone) ? updatedSellerDTO.phone : null;

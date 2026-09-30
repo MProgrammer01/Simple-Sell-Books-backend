@@ -52,6 +52,7 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             get
             {
                 return new clsSellerDTO(
+                    this.personID,
                     this.fullName,
                     this.email,
                     this.phone,

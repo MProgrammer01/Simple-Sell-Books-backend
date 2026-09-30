@@ -97,6 +97,8 @@ namespace SimpleSellBooks_DataLayer.sellers
 
         public static bool UpdateSeller(clsSellerDTO sellerDTO)
         {
+            System.Diagnostics.Debug.WriteLine("PeersonID " + sellerDTO.personID);
+
             bool isUpdated = false;
 
             string SP_UpdateSeller = "SP_UpdateSeller";
@@ -212,6 +214,7 @@ namespace SimpleSellBooks_DataLayer.sellers
 
         public static clsSellerDTO GetSellerByPersonID(int personID)
         {
+
             clsSellerDTO sellerDTO = new clsSellerDTO();
 
             string SP_GetSellerByPersonID = "SP_GetSellerByPersonID";
