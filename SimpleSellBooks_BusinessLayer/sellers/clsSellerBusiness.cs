@@ -36,7 +36,7 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             get
             {
                 return new clsSellerDTO(
-                    this.sellerID,
+                    this.personID,
                     this.fullName,
                     this.email,
                     this.phone,
@@ -81,10 +81,11 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             Mode = enMode.UpdateSeller;
         }
 
-        clsSellerBusiness(string fullName,
+        clsSellerBusiness(int personID, string fullName,
             string email, string? phone, string? addressPerson, string role,
             string storeName, string? logoStore)
         {
+            this.personID = personID;
             this.storeName = storeName;
             this.logoStore = logoStore;
             this.fullName = fullName;
@@ -118,9 +119,9 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         {
             clsSellerDTO sellerDTO = clsSellerData.GetSellerByPersonID(personID);
 
-            if (sellerDTO != null && sellerDTO.sellerID > 0)
+            if (sellerDTO != null && sellerDTO.personID > 0)
             {
-                return new clsSellerBusiness(sellerDTO.fullName, sellerDTO.email,
+                return new clsSellerBusiness(sellerDTO.personID, sellerDTO.fullName, sellerDTO.email,
                         sellerDTO.phone, sellerDTO.addressPerson, 
                         sellerDTO.role, sellerDTO.storeName, sellerDTO.logoStore);
             }

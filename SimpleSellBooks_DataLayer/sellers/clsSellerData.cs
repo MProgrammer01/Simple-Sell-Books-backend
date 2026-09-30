@@ -98,7 +98,6 @@ namespace SimpleSellBooks_DataLayer.sellers
         public static bool UpdateSeller(clsSellerDTO sellerDTO)
         {
             System.Diagnostics.Debug.WriteLine("PeersonID " + sellerDTO.personID);
-
             bool isUpdated = false;
 
             string SP_UpdateSeller = "SP_UpdateSeller";
@@ -231,7 +230,7 @@ namespace SimpleSellBooks_DataLayer.sellers
 
                 if (reader.Read())
                 {
-                    int sellerID = (int)reader["sellerID"];
+                    personID = (int)reader["personID"];
                     string fullName = (string)reader["fullName"];
                     string email = (string)reader["email"];
                     string? phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? null :
@@ -243,7 +242,7 @@ namespace SimpleSellBooks_DataLayer.sellers
                     string? logoStore = reader.IsDBNull(reader.GetOrdinal("logoStore")) ? null :
                                         (string)reader["logoStore"];
 
-                    sellerDTO = new clsSellerDTO(sellerID, fullName, email,
+                    sellerDTO = new clsSellerDTO(personID, fullName, email,
                         phone, addressPerson, role, storeName, logoStore);
                 }
 
