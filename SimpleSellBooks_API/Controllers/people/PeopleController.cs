@@ -9,6 +9,7 @@ using SimpleSellBooks_BusinessLayer.sellers;
 using SimpleSellBooks_DataLayer.people;
 using SimpleSellBooks_DataLayer.sellers;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SimpleSellBooks_API.Controllers.people
 {
@@ -182,27 +183,49 @@ namespace SimpleSellBooks_API.Controllers.people
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}", Name = "DeletePerson")]
+        //[Authorize(Roles = "Admin")]
+        [HttpDelete("DeletePerson")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeletePerson(int id)
+        public async Task<ActionResult> DeletePerson(
+            [FromServices] IAuthorizationService authorizationService,
+            int personID)
         {
-            if (id < 1)
+            if (personID < 1)
             {
-                return BadRequest($"Not accepted ID {id}");
+                return BadRequest($"Not accepted ID {personID}");
             }
 
-            clsPersonBusiness? person = clsPersonBusiness.FindPersonByID(id);
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        personID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "Person is not authorized to access this person for updating.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: personID.ToString(),
+                    targetType: "Person",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            clsPersonBusiness? person = clsPersonBusiness.FindPersonByID(personID);
 
             if (person == null)
             {
-                return NotFound($"Person with ID {id} not found.");
+                return NotFound($"Person with ID {personID} not found.");
             }
 
-            if (clsPersonBusiness.DeletePerson(id))
+            if (clsPersonBusiness.DeletePerson(personID))
             {
                 await _auditService.LogAsync(
                     eventType: clsHelperMethods.GetCurrentRole(HttpContext),
@@ -214,7 +237,7 @@ namespace SimpleSellBooks_API.Controllers.people
                     targetId: person.personID.ToString(),
                     details: "Admin Deleted Person."
                 );
-                return Ok($"Person with ID {id} has been deleted.");
+                return Ok($"Person with ID {personID} has been deleted.");
             }
 
             return BadRequest("Failed to delete person.");
@@ -303,7 +326,7 @@ namespace SimpleSellBooks_API.Controllers.people
                     targetId: updatedPasswordDTO.personID.ToString(),
                     details: $"Person Password Was Updated By {clsHelperMethods.GetCurrentRole(HttpContext)}."
                 );
-                return Ok();
+                return Ok("Person Password Was Updated");
             }
 
             return BadRequest("Failed to update person password.");
