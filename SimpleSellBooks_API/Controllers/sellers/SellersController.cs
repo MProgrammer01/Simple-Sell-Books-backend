@@ -90,10 +90,9 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
-        public async Task<ActionResult<clsSellerDTO>> GetSellerByPersonID([FromServices] IAuthorizationService authorizationService)
+        public async Task<ActionResult<clsSellerDTO>> GetSellerByPersonID(
+            [FromServices] IAuthorizationService authorizationService, int personID)
         {
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
             if (personID < 1)
             {
                 return BadRequest($"Not accepted personID {personID}");
@@ -243,7 +242,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
                     targetId: seller.sellerID.ToString(),
                     details: $"Seller Was Updated By{clsHelperMethods.GetCurrentRole(HttpContext)}."
                 );
-                return Ok(seller.sellerDTO);
+                return Ok(seller.sellerByPersonIDDTO);
             }
 
             return BadRequest("Failed to update seller.");
