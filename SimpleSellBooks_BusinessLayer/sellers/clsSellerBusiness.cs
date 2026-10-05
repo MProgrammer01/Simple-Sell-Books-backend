@@ -42,7 +42,8 @@ namespace SimpleSellBooks_BusinessLayer.sellers
                     this.phone,
                     this.addressPerson,
                     this.role,
-                    this.storeName, this.logoStore);
+                    this.storeName, 
+                    this.logoStore);
             }
         }
 
@@ -56,7 +57,8 @@ namespace SimpleSellBooks_BusinessLayer.sellers
                     this.fullName,
                     this.email,
                     this.phone,
-                    this.addressPerson, this.storeName,
+                    this.addressPerson, 
+                    this.storeName,
                     this.logoStore);
             }
         }

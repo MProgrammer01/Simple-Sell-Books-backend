@@ -120,10 +120,12 @@ namespace SimpleSellBooks_DataLayer.sellers
             try
             {
                 connectionToDB.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-                if (rowsAffected > 0)
+
+                object result = command.ExecuteScalar();
+
+                if (result != null && result != DBNull.Value)
                 {
-                    isUpdated = true;
+                    isUpdated = Convert.ToBoolean(result);
                 }
 
             }
