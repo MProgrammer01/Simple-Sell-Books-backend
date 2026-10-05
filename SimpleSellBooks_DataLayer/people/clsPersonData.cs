@@ -391,5 +391,62 @@ namespace SimpleSellBooks_DataLayer.people
 
             return isPersonExist;
         }
+
+        public static string getPasswordHashByPersonID(int personID)
+        {
+            string passwordHash = string.Empty;
+            string SP_GetPasswordHashByPersonID = "SP_GetPasswordByPersonID";
+            SqlCommand command = new SqlCommand(SP_GetPasswordHashByPersonID, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@personID", personID);
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    passwordHash = (string)reader["passwordHash"];
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error getPasswordHashByPersonID Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+            return passwordHash;
+        }
+
+        public static bool UpdatePasswordHash(int personID, 
+            string newPasswordHash)
+        {
+            bool isUpdated = false;
+            string SP_UpdatePasswordHash = "SP_UpdatePasswordByPersonID";
+            SqlCommand command = new SqlCommand(SP_UpdatePasswordHash, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@personID", personID);
+            command.Parameters.AddWithValue("@newPasswordHash", newPasswordHash);
+            try
+            {
+                connectionToDB.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    isUpdated = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: UpdatePasswordHash Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+            return isUpdated;
+        }
     }
 }

@@ -177,6 +177,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<clsSellerDTO>> UpdateSeller(
             [FromServices] IAuthorizationService authorizationService, 
             clsSellerDTO updatedSellerDTO)
@@ -202,7 +203,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
                     details: "Seller is not authorized to access this seller for updating.",
                     action: SecurityAction.AccessDenied,
                     targetId: updatedSellerDTO.personID.ToString(),
-                    targetType: "Book",
+                    targetType: "Seller",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
                 return Forbid();

@@ -130,7 +130,7 @@ namespace SimpleSellBooks_BusinessLayer.people
         public static clsSignInResponseDTO? Login(clsSignInDTO signInDTO)
         {
             clsSignInResponseDTO personAuthDTO = clsPersonData.SignInResponse(signInDTO.email);
-            
+
             if (personAuthDTO == null || personAuthDTO.personID <= 0)
             {
                 return null;
@@ -216,6 +216,17 @@ namespace SimpleSellBooks_BusinessLayer.people
         public static bool IsPersonExistsByEmail(string email)
         {
             return clsPersonData.IsPersonExistsByEmail(email);
+        }
+
+        public static string getPasswordHashByPersonID(int personID)
+        {
+            return clsPersonData.getPasswordHashByPersonID(personID);
+        }
+
+        public static bool UpdatePasswordHash(int personID, string newPasswordHash)
+        {
+            newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPasswordHash);
+            return clsPersonData.UpdatePasswordHash(personID, newPasswordHash);
         }
     }
 }
