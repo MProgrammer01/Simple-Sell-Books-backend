@@ -205,5 +205,10 @@ namespace SimpleSellBooks_BusinessLayer.books
         {
             return clsBookData.DeleteBook(bookId);
         }
+
+        public static bool ThisPersonHaveThisBook(int personID, int bookID)
+        {
+            return clsBookData.ThisPersonHaveThisBook(personID, bookID);
+        }
     }
 }

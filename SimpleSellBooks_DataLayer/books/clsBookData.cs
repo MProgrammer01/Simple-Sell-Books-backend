@@ -52,7 +52,7 @@ namespace SimpleSellBooks_DataLayer.books
 
                     booksList.Add(new clsBookDTO(BookId, CategoryId, Title, Author,
                         BookDescription, Price, Stock, ConditionId, CoverImg, StatusId, CreatedAt, UpdatedAt));
-                
+
                 }
                 reader.Close();
             }
@@ -68,7 +68,7 @@ namespace SimpleSellBooks_DataLayer.books
             return booksList;
         }
 
-        public static clsPaginatedBooksDTO GetAllBooksByPersonID(int personID, 
+        public static clsPaginatedBooksDTO GetAllBooksByPersonID(int personID,
             int pageNumber,
             int pageSize)
         {
@@ -319,5 +319,33 @@ namespace SimpleSellBooks_DataLayer.books
             return bookDTO;
         }
 
+        public static bool ThisPersonHaveThisBook(int personID, int bookID)
+        {
+            bool hasBook = false;
+            string SP_CheckPersonHasBook = "SP_CheckPersonHaveThisBook";
+            SqlCommand command = new SqlCommand(SP_CheckPersonHasBook, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@personID", personID);
+            command.Parameters.AddWithValue("@bookID", bookID);
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    hasBook = true;
+                }
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error thisPersonHaveThisBook Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+            return hasBook;
+        }
     }
 }

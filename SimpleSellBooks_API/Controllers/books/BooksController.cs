@@ -97,7 +97,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        //[Authorize(Roles = "Admin, Seller")]
+        [Authorize(Roles = "Admin, Seller")]
         [HttpGet("FindBookById", Name = "GetBookById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -114,32 +114,21 @@ namespace SimpleSellBooks_API.Controllers.books
 
             int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
-
             if (personID < 1)
             {
                 return BadRequest($"Not accepted personID {personID}");
             }
 
-            var authResult = await authorizationService.AuthorizeAsync(
-                        User,
-                        personID,
-                        "OwnerOrAdmin");
+            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
 
-            if (!authResult.Succeeded)
+            if (role == "Seller")
             {
-
-                await _auditService.LogAsync(
-                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
-                    HttpContext,
-                    statusCode: StatusCodes.Status403Forbidden,
-                    details: "Seller is not authorized to access this book for finding.",
-                    action: SecurityAction.AccessDenied,
-                    targetId: personID.ToString(),
-                    targetType: "Book",
-                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
-                );
-                return Forbid();
-            } // 403
+                bool isHaseThisBook = clsBookBusiness.ThisPersonHaveThisBook(personID, bookId);
+                if (!isHaseThisBook)
+                {
+                    return BadRequest($"This PersonID {personID} is not the owner of this book.");
+                }
+            }
 
             clsBookBusiness? book = clsBookBusiness.FindBook(bookId);
 
@@ -240,7 +229,7 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        //[Authorize(Roles = "Admin, Seller")]
+        [Authorize(Roles = "Admin, Seller")]
         [HttpPut("UpdateBookByID")]
         [EnableRateLimiting("UpdatePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -258,31 +247,23 @@ namespace SimpleSellBooks_API.Controllers.books
             }
 
 
-            if (updatedBookDTO.personId < 1)
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+            if (personID < 1)
             {
-                return BadRequest($"Not accepted personID {updatedBookDTO.personId}");
+                return BadRequest($"Not accepted personID {personID}");
             }
 
-            var authResult = await authorizationService.AuthorizeAsync(
-                        User,
-                        updatedBookDTO.personId,
-                        "OwnerOrAdmin");
+            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
 
-            if (!authResult.Succeeded)
+            if (role == "Seller")
             {
-
-                await _auditService.LogAsync(
-                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
-                    HttpContext,
-                    statusCode: StatusCodes.Status403Forbidden,
-                    details: "Seller is not authorized to access this book for updating.",
-                    action: SecurityAction.AccessDenied,
-                    targetId: updatedBookDTO.personId.ToString(),
-                    targetType: "Book",
-                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
-                );
-                return Forbid();
-            } // 403
+                bool isHaseThisBook = clsBookBusiness.ThisPersonHaveThisBook(personID, bookID);
+                if (!isHaseThisBook)
+                {
+                    return BadRequest($"This PersonID {personID} is not the owner of this book.");
+                }
+            }
 
             if (updatedBookDTO == null ||
                 updatedBookDTO.categoryId < 0 || string.IsNullOrEmpty(updatedBookDTO.title) ||
@@ -330,61 +311,49 @@ namespace SimpleSellBooks_API.Controllers.books
         }
 
 
-        //[Authorize(Roles = "Admin, Seller")]
+        [Authorize(Roles = "Admin, Seller")]
         [HttpDelete("DeleteBookByID")]
         [EnableRateLimiting("DeletePolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> DeleteBook(int id,
+        public async Task<ActionResult> DeleteBook(int bookID,
                 [FromServices] IAuthorizationService authorizationService)
         {
             
-            if (id < 1)
+            if (bookID < 1)
             {
-                return BadRequest($"Not accepted ID {id}");
+                return BadRequest($"Not accepted ID {bookID}");
             }
 
             int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
 
             if (personID < 1)
             {
                 return BadRequest($"Not accepted personID {personID}");
             }
 
-            var authResult = await authorizationService.AuthorizeAsync(
-                        User,
-                        personID,
-                        "OwnerOrAdmin");
+            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
 
-            if (!authResult.Succeeded)
+            if (role == "Seller")
             {
+                bool isHaseThisBook = clsBookBusiness.ThisPersonHaveThisBook(personID, bookID);
+                if (!isHaseThisBook)
+                {
+                    return BadRequest($"This PersonID {personID} is not the owner of this book.");
+                }
+            }
 
-                await _auditService.LogAsync(
-                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
-                    HttpContext,
-                    statusCode: StatusCodes.Status403Forbidden,
-                    details: "Seller is not authorized to access this book for deleting.",
-                    action: SecurityAction.AccessDenied,
-                    targetId: personID.ToString(),
-                    targetType: "Book",
-                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
-                );
-                return Forbid();
-            } // 403
-
-
-            clsBookBusiness? book = clsBookBusiness.FindBook(id);
+            clsBookBusiness? book = clsBookBusiness.FindBook(bookID);
 
             if (book == null)
             {
-                return NotFound($"Book with ID {id} not found.");
+                return NotFound($"Book with ID {bookID} not found.");
             }
 
             
-            if (clsBookBusiness.DeleteBook(id))
+            if (clsBookBusiness.DeleteBook(bookID))
             {
 
                 await _auditService.LogAsync(
@@ -397,7 +366,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     targetId: book.bookId.ToString(),
                     details: $"Book Was Deleted By {clsHelperMethods.GetCurrentRole(HttpContext)}."
                 );
-                return Ok($"Book with ID {id} has been deleted.");
+                return Ok($"Book with ID {bookID} has been deleted.");
             }
 
             return BadRequest("Failed to delete book.");
