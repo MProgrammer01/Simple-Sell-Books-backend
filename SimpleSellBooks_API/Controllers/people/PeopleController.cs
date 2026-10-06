@@ -227,16 +227,6 @@ namespace SimpleSellBooks_API.Controllers.people
 
             if (clsPersonBusiness.DeletePerson(personID))
             {
-                await _auditService.LogAsync(
-                    eventType: clsHelperMethods.GetCurrentRole(HttpContext),
-                    HttpContext,
-                    userId: clsHelperMethods.GetCurrentUserId(HttpContext),
-                    action: SecurityAction.Delete,
-                    statusCode: StatusCodes.Status200OK,
-                    targetType: "Person",
-                    targetId: person.personID.ToString(),
-                    details: "Admin Deleted Person."
-                );
                 return Ok($"Person with ID {personID} has been deleted.");
             }
 
