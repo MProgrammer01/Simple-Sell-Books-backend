@@ -247,26 +247,25 @@ namespace SimpleSellBooks_API.Controllers.books
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<clsBookDTO>> UpdateBook(int id,
-                [FromServices] IAuthorizationService authorizationService, clsBookDTO updatedBookDTO)
+        public async Task<ActionResult<clsBookDTO>> UpdateBook(int bookID,
+                [FromServices] IAuthorizationService authorizationService, 
+                clsBookDTO updatedBookDTO)
         {
             
-            if (id < 1)
+            if (bookID < 1)
             {
-                return BadRequest($"Not accepted Book ID {id}");
+                return BadRequest($"Not accepted Book ID {bookID}");
             }
 
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
 
-
-            if (personID < 1)
+            if (updatedBookDTO.personId < 1)
             {
-                return BadRequest($"Not accepted personID {personID}");
+                return BadRequest($"Not accepted personID {updatedBookDTO.personId}");
             }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        personID,
+                        updatedBookDTO.personId,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -278,7 +277,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for updating.",
                     action: SecurityAction.AccessDenied,
-                    targetId: personID.ToString(),
+                    targetId: updatedBookDTO.personId.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
@@ -293,11 +292,11 @@ namespace SimpleSellBooks_API.Controllers.books
                 return BadRequest("Invalid book data.");
             }
 
-            clsBookBusiness? book = clsBookBusiness.FindBook(id);
+            clsBookBusiness? book = clsBookBusiness.FindBook(bookID);
 
             if (book == null)
             {
-                return NotFound($"Book with ID {id} not found.");
+                return NotFound($"Book with ID {bookID} not found.");
             }
 
 
