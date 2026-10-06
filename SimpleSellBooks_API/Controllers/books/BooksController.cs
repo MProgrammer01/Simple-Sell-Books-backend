@@ -64,23 +64,10 @@ namespace SimpleSellBooks_API.Controllers.books
                 return BadRequest("Page size must be between 1 and 100.");
             }
 
-            int currentPersonID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
-            if (currentPersonID < 1 || personID < 1)
-            {
-                return BadRequest($"Not accepted personID {currentPersonID}");
-            }
-
-            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
-
-            if (string.IsNullOrEmpty(role))
-            {
-                return BadRequest($"Not role found {role}");
-            }
 
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        role.Equals("Seller") ? personID : currentPersonID,
+                        personID,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -91,7 +78,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for finding.",
                     action: SecurityAction.AccessDenied,
-                    targetId: currentPersonID.ToString(),
+                    targetId: personID.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
@@ -185,22 +172,14 @@ namespace SimpleSellBooks_API.Controllers.books
             [FromServices] IAuthorizationService authorizationService)
         {
 
-            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
-
-            if (personID < 1)
+            if (newBookDTO.personId < 1)
             {
-                return BadRequest($"Not accepted personID {personID}");
+                return BadRequest($"Not accepted personID {newBookDTO.personId}");
             }
 
-            string role = clsHelperMethods.GetCurrentRole(HttpContext) ?? string.Empty;
-
-            if (string.IsNullOrEmpty(role))
-            {
-                return BadRequest($"Not role found {role}");
-            }
             var authResult = await authorizationService.AuthorizeAsync(
                         User,
-                        role.Equals("Seller") ? newBookDTO.personId : personID,
+                        newBookDTO.personId,
                         "OwnerOrAdmin");
 
             if (!authResult.Succeeded)
@@ -212,7 +191,7 @@ namespace SimpleSellBooks_API.Controllers.books
                     statusCode: StatusCodes.Status403Forbidden,
                     details: "Seller is not authorized to access this book for finding.",
                     action: SecurityAction.AccessDenied,
-                    targetId: personID.ToString(),
+                    targetId: newBookDTO.personId.ToString(),
                     targetType: "Book",
                     userId: clsHelperMethods.GetCurrentUserId(HttpContext)
                 );
