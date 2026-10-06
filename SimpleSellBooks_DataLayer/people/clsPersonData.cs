@@ -269,7 +269,6 @@ namespace SimpleSellBooks_DataLayer.people
             return personDTO;
         }
 
-
         public static clsSignInResponseDTO RefreshTokenResponce(string email)
         {
             clsSignInResponseDTO personDTO = new clsSignInResponseDTO();
@@ -321,7 +320,6 @@ namespace SimpleSellBooks_DataLayer.people
 
             return personDTO;
         }
-
 
         public static bool UpdateRefreshToken(clsUpdateRefreshTokenDto refreshToken)
         {

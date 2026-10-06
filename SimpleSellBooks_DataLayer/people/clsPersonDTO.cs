@@ -11,6 +11,7 @@ namespace SimpleSellBooks_DataLayer.people
         public int personID { get; set; }
         public string fullName { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;
+        public string password { get; set; } = string.Empty;
         public string? phone { get; set; }
         public string? addressPerson { get; set; }
         public string role { get; set; } = string.Empty;

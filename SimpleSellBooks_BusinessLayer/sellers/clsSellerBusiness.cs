@@ -9,25 +9,42 @@ using System.Threading.Tasks;
 
 namespace SimpleSellBooks_BusinessLayer.sellers
 {
-    public class clsSellerBusiness : clsPersonDTO
+    public class clsSellerBusiness : clsPersonBusiness
     {
         enum enMode { AddNewSeller = 1, UpdateSeller = 2 }
         enMode Mode = enMode.AddNewSeller;
 
         public int sellerID { get; set; }
-        //public int personID { get; set; }
         public string storeName { get; set; }
         public string? logoStore { get; set; }
-
-        //public clsPersonBusiness personInfo;
-
 
         public clsSellerDTO sellerDTO
         {
             get
             {
-                return new clsSellerDTO(this.sellerID, 
-                    this.personID, this.storeName, this.logoStore);
+                return new clsSellerDTO(
+                    this.personID,
+                    this.fullName,
+                    this.email,
+                    this.phone,
+                    this.addressPerson,
+                    this.storeName,
+                    this.logoStore);
+            }
+        }
+
+        public clsSellerDTO addSellerDTO
+        {
+            get
+            {
+                return new clsSellerDTO(
+                    this.fullName,
+                    this.email,
+                    this.password,
+                    this.phone,
+                    this.addressPerson,
+                    this.storeName,
+                    this.logoStore);
             }
         }
 
@@ -67,25 +84,32 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         {
             this.sellerID = 0;
             this.personID = 0;
+            this.fullName = string.Empty;
+            this.email = string.Empty;
+            this.password = string.Empty;
+            this.phone = string.Empty;
+            this.addressPerson = string.Empty;
+            this.role = string.Empty;
+            this.createdAt = DateTime.Now;
+            this.updatedAt = DateTime.Now;
             this.storeName = string.Empty;
             this.logoStore = string.Empty;
-            //this.personInfo = new clsPersonBusiness();
             Mode = enMode.AddNewSeller;
         }
 
-        clsSellerBusiness(int sellerID, int personID, string storeName, string? logoStore)
+        clsSellerBusiness(int sellerID, int personID, string storeName, 
+            string? logoStore)
         {
             this.sellerID = sellerID;
             this.personID = personID;
             this.storeName = storeName;
             this.logoStore = logoStore;
-            //this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
             Mode = enMode.UpdateSeller;
         }
 
         clsSellerBusiness(int personID, string fullName,
-            string email, string? phone, string? addressPerson, string role,
-            string storeName, string? logoStore)
+            string email, string? phone, string? addressPerson, 
+            string role, string storeName, string? logoStore)
         {
             this.personID = personID;
             this.storeName = storeName;
@@ -95,7 +119,6 @@ namespace SimpleSellBooks_BusinessLayer.sellers
             this.phone = phone;
             this.addressPerson = addressPerson;
             this.role = role;
-            //this.personInfo = clsPersonBusiness.FindPersonByID(sellerDTO.personID) ?? new clsPersonBusiness();
             Mode = enMode.UpdateSeller;
         }
 
@@ -133,8 +156,9 @@ namespace SimpleSellBooks_BusinessLayer.sellers
 
         bool _AddNewSeller()
         {
-            this.sellerID = clsSellerData.AddNewSeller(sellerDTO);
-            return (this.sellerID > 0);
+            this.password = BCrypt.Net.BCrypt.HashPassword(this.password);
+            this.personID = clsSellerData.AddNewSeller(addSellerDTO);
+            return (this.personID > 0);
         }
 
 
@@ -167,7 +191,7 @@ namespace SimpleSellBooks_BusinessLayer.sellers
         }
 
 
-        public static bool SignUp(clsSignUPSellerDTO signUPSellerDTO)
+        public static bool SignUp(clsSellerDTO signUPSellerDTO)
         {
             signUPSellerDTO.password = BCrypt.Net.BCrypt.HashPassword(signUPSellerDTO.password);
 

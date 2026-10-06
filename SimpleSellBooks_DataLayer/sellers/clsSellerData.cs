@@ -59,17 +59,38 @@ namespace SimpleSellBooks_DataLayer.sellers
         public static int AddNewSeller(clsSellerDTO sellerDTO)
         {
             int InsertedID = 0;
-            string SP_AddNewSeller = "SP_AddNewSeller";
-            SqlCommand command = new SqlCommand(SP_AddNewSeller, connectionToDB);
+
+            string SP_SellerSignUp = "SP_SellerSignUp";
+
+            SqlCommand command = new SqlCommand(SP_SellerSignUp, connectionToDB);
+
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@personID", sellerDTO.personID);
+
+            //person data
+            command.Parameters.AddWithValue("@fullName", sellerDTO.fullName);
+            command.Parameters.AddWithValue("@email", sellerDTO.email);
+            command.Parameters.AddWithValue("@passwordHash", sellerDTO.password);
+            command.Parameters.AddWithValue("@phone", sellerDTO.phone ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@addressPerson", sellerDTO.addressPerson ?? (object)DBNull.Value);
+
+            //seller data
             command.Parameters.AddWithValue("@storeName", sellerDTO.storeName);
             command.Parameters.AddWithValue("@logoStore", sellerDTO.logoStore ?? (object)DBNull.Value);
 
-            var outputIdParam = new SqlParameter("@NewSeller_ID", SqlDbType.Int)
+            SqlParameter returnParameter = new SqlParameter
+            {
+                ParameterName = "@ReturnValue",
+                Direction = ParameterDirection.ReturnValue
+            };
+
+            command.Parameters.Add(returnParameter);
+
+            var outputIdParam = new SqlParameter("@NewAddedPerson_ID",
+                SqlDbType.Int)
             {
                 Direction = ParameterDirection.Output
             };
+
             command.Parameters.Add(outputIdParam);
 
             try
@@ -78,19 +99,24 @@ namespace SimpleSellBooks_DataLayer.sellers
 
                 int rows = command.ExecuteNonQuery();
 
-                if (rows > 0)
+                if (Convert.ToInt32(returnParameter.Value) == 1)
                 {
-                    InsertedID = (int)outputIdParam.Value;
+                    if (rows > 0)
+                    {
+                        InsertedID = (int)outputIdParam.Value;
+                    }
                 }
+
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error: AddNewSeller Data " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Error: SellerSignUp Data " + ex.Message);
             }
             finally
             {
                 connectionToDB.Close();
             }
+
             return InsertedID;
 
         }
@@ -262,7 +288,7 @@ namespace SimpleSellBooks_DataLayer.sellers
             return sellerDTO;
         }
 
-        public static bool SellerSignUp(clsSignUPSellerDTO sellerDTO)
+        public static bool SellerSignUp(clsSellerDTO sellerDTO)
         {
             bool isSignedIN = false;
 
@@ -290,6 +316,13 @@ namespace SimpleSellBooks_DataLayer.sellers
             };
 
             command.Parameters.Add(returnParameter);
+
+            var newAddedPersonID = new SqlParameter("@NewAddedPerson_ID", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            command.Parameters.Add(newAddedPersonID);
 
             try
             {

@@ -37,7 +37,8 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Login([FromBody] clsSignInDTO signInDTO)
+        public async Task<IActionResult> Login(
+            clsSignInDTO signInDTO)
         {
             // Step 1: Find the person by email from DB.
             // Email acts as the unique login identifier.
@@ -165,7 +166,8 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Refresh([FromBody] clsRefreshRequest request)
+        public async Task<IActionResult> Refresh(
+            clsRefreshRequest request)
         {
             clsSignInResponseDTO? refreshTokenResponse = clsPersonBusiness.RefreshTokenResponce(request.Email);
 
@@ -332,8 +334,18 @@ namespace SimpleSellBooks_API.Controllers.Authentication
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SignUp([FromBody] clsSignUPSellerDTO signUpDTO)
+        public async Task<IActionResult> SignUp(
+            clsSellerDTO signUpDTO)
         {
+            if (signUpDTO == null ||
+                string.IsNullOrEmpty(signUpDTO.fullName) ||
+                string.IsNullOrEmpty(signUpDTO.email) ||
+                string.IsNullOrEmpty(signUpDTO.password) ||
+                string.IsNullOrEmpty(signUpDTO.storeName))
+            {
+                return BadRequest("Invalid data.");
+            }
+
             // Check if email already exists
             if (clsPersonBusiness.IsPersonExistsByEmail(signUpDTO.email))
             {

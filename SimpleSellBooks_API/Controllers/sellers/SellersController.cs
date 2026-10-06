@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using SimpleSellBooks_API.helper_methods;
 using SimpleSellBooks_API.Services;
+using SimpleSellBooks_BusinessLayer.people;
 using SimpleSellBooks_BusinessLayer.sellers;
 using SimpleSellBooks_DataLayer.sellers;
 using System.Security.Claims;
@@ -39,51 +40,6 @@ namespace SimpleSellBooks_API.Controllers.sellers
             return Ok(sellerList);
         }
 
-
-        //[Authorize(Roles = "Admin, Seller")]
-        [HttpGet("FindSellerByID", Name = "GetSellerByID")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<clsSellerDTO>> GetSellerByID(int sellerID,
-                [FromServices] IAuthorizationService authorizationService)
-        {
-            if (sellerID < 1)
-            {
-                return BadRequest($"Not accepted sellerID {sellerID}");
-            }
-
-            clsSellerBusiness? seller = clsSellerBusiness.FindSellerByID(sellerID);
-
-            if (seller == null)
-            {
-                return NotFound($"Seller with sellerID {sellerID} not found.");
-            }
-
-            var authResult = await authorizationService.AuthorizeAsync(
-                        User,
-                        sellerID,
-                        "OwnerOrAdmin");
-            
-            if (!authResult.Succeeded){
-
-                await _auditService.LogAsync(
-                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
-                    HttpContext,
-                    statusCode: StatusCodes.Status403Forbidden,
-                    details: "User is not authorized to access this seller.",
-                    action: SecurityAction.AccessDenied,
-                    targetId: sellerID.ToString(),
-                    targetType: "Seller",
-                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
-                );
-                return Forbid();
-            } // 403
-
-            return Ok(seller.sellerDTO);
-        }
-
         [HttpGet("FindSellerByPersonID", Name = "GetSellerByPersonID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,7 +47,8 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
 
         public async Task<ActionResult<clsSellerDTO>> GetSellerByPersonID(
-            [FromServices] IAuthorizationService authorizationService, int personID)
+            [FromServices] IAuthorizationService authorizationService, 
+            int personID)
         {
             if (personID < 1)
             {
@@ -136,16 +93,38 @@ namespace SimpleSellBooks_API.Controllers.sellers
         [EnableRateLimiting("CreatePolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<clsSellerDTO>> AddNewSeller(clsSellerDTO newSellerDTO)
+        public async Task<ActionResult<clsSellerDTO>> AddNewSeller(
+            clsSellerDTO newSellerDTO)
         {
-            if (newSellerDTO == null || newSellerDTO.personID < 0 || 
+            if (newSellerDTO == null || 
+                string.IsNullOrEmpty(newSellerDTO.fullName) ||
+                string.IsNullOrEmpty(newSellerDTO.email) ||
+                string.IsNullOrEmpty(newSellerDTO.password) || 
                 string.IsNullOrEmpty(newSellerDTO.storeName))
             {
                 return BadRequest("Invalid seller data.");
             }
 
+            // Check if email already exists
+            if (clsPersonBusiness.IsPersonExistsByEmail(newSellerDTO.email))
+            {
+                await _auditService.LogAsync(
+                       SecurityEventTypeAndAction.SignUpFailed.ToString(),
+                       HttpContext,
+                       statusCode: StatusCodes.Status409Conflict,
+                       details: "Email already exists.",
+                       action: SecurityAction.RefreshToken
+                    );
+                return Conflict("Email already exists.");
+            }
+
             clsSellerBusiness seller = new clsSellerBusiness();
-            seller.personID = newSellerDTO.personID;
+            seller.fullName = seller.fullName;
+            seller.email = seller.email;
+            seller.password = seller.password;
+            seller.phone = !string.IsNullOrEmpty(seller.phone) ? seller.phone : null;
+            seller.addressPerson = !string.IsNullOrEmpty(seller.addressPerson) ? seller.addressPerson : null;
+
             seller.storeName = newSellerDTO.storeName;
             seller.logoStore = !string.IsNullOrEmpty(newSellerDTO.logoStore) ? newSellerDTO.logoStore : null ;
 
@@ -159,11 +138,11 @@ namespace SimpleSellBooks_API.Controllers.sellers
                     statusCode: StatusCodes.Status201Created,
                     targetType: "Seller",
                     targetId: seller.sellerID.ToString(),
-                    details: "Admin Added New Seller."
+                    details: "Added New Seller."
                 );
 
-                return CreatedAtRoute("GetSellerByID",
-                    new { sellerID = seller.sellerID },
+                return CreatedAtRoute("GetSellerByPersonID",
+                    new { personID = seller.personID },
                     seller.sellerDTO);
             }
 

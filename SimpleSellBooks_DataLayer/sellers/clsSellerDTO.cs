@@ -10,7 +10,6 @@ namespace SimpleSellBooks_DataLayer.sellers
     public class clsSellerDTO : clsPersonDTO
     {
         public int sellerID { get; set; }
-        //public int personID { get; set; }
         public string storeName { get; set; }
         public string? logoStore { get; set; }
 
@@ -20,14 +19,30 @@ namespace SimpleSellBooks_DataLayer.sellers
             storeName = string.Empty;
         }
 
-        //retrive and add new
-        public clsSellerDTO(int sellerID, int personID, string storeName, string? logoStore)
+        //retrive
+        public clsSellerDTO(int sellerID, int personID, 
+            string storeName, string? logoStore)
         {
             this.sellerID = sellerID;
             this.personID = personID;
             this.storeName = storeName;
             this.logoStore = logoStore;
 
+        }
+
+        //add
+        public clsSellerDTO(string fullName,
+            string email, string passwordHash, string? phone,
+            string? addressPerson, string storeName, string? logoStore)
+        {
+            this.personID = personID;
+            this.fullName = fullName;
+            this.email = email;
+            this.password = passwordHash;
+            this.phone = phone;
+            this.addressPerson = addressPerson;
+            this.storeName = storeName;
+            this.logoStore = logoStore;
         }
 
         //retrive by personID
