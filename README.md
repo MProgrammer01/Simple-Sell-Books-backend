@@ -1,3 +1,7 @@
-# sell_your_books
+## 🔗 Backend Repository
 
-This Is A Back End .Net project For Sell Books Project.
+هذا المشروع يمثل **Backend** لتطبيق **Sell Your Books**، ويوفر RESTful API مبني باستخدام **ASP.NET Core Web API**، والذي يتم استهلاكه من طرف تطبيق **Flutter**.
+
+يمكنك الاطلاع على الـFrontend Repository من هنا:
+
+👉 **[Sell Your Books — Frontend](https://github.com/MProgrammer01/Simple-Sell-Books-frontend.git)**
