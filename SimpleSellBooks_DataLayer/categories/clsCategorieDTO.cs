@@ -20,13 +20,16 @@ namespace SimpleSellBooks_DataLayer.categories
 
         }
 
-        public clsCategorieDTO(int categoryID, string categoryName, string? categoryDescription, DateTime createdAt, DateTime updatedAt)
+        public clsCategorieDTO(int categoryID, string categoryName,
+            string? categoryDescription
+            //, DateTime createdAt, DateTime updatedAt
+            )
         {
             this.categoryID = categoryID;
             this.categoryName = categoryName;
             this.categoryDescription = categoryDescription;
-            this.createdAt = createdAt;
-            this.updatedAt = updatedAt;
+            //this.createdAt = createdAt;
+            //this.updatedAt = updatedAt;
 
         }
 

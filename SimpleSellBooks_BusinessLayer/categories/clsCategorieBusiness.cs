@@ -24,7 +24,9 @@ namespace SimpleSellBooks_BusinessLayer.categories
             get
             {
                 return new clsCategorieDTO(this.categoryID, this.categoryName, 
-                    this.categoryDescription, this.createdAt, this.updatedAt);
+                    this.categoryDescription
+                    //, this.createdAt, this.updatedAt
+                    );
             }
         }
 
@@ -44,8 +46,8 @@ namespace SimpleSellBooks_BusinessLayer.categories
             this.categoryID = categorieDTO.categoryID;
             this.categoryName = categorieDTO.categoryName;
             this.categoryDescription = categorieDTO.categoryDescription;
-            this.createdAt = categorieDTO.createdAt;
-            this.updatedAt = categorieDTO.updatedAt;
+            //this.createdAt = categorieDTO.createdAt;
+            //this.updatedAt = categorieDTO.updatedAt;
 
             Mode = enMode.UpdateCategorie;
         }

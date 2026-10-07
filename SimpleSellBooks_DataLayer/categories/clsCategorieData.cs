@@ -34,10 +34,12 @@ namespace SimpleSellBooks_DataLayer.categories
                         string categoryName = (string)reader["categoryName"];
                         string? categoryDescription = reader.IsDBNull(reader.GetOrdinal("categoryDescription")) ? null :
                                             (string)reader["categoryDescription"];
-                        DateTime createdAt = (DateTime)reader["createdAt"];
-                        DateTime updatedAt = (DateTime)reader["updatedAt"];
+                        //DateTime createdAt = (DateTime)reader["createdAt"];
+                        //DateTime updatedAt = (DateTime)reader["updatedAt"];
 
-                        listCategories.Add(new clsCategorieDTO(categoryID, categoryName, categoryDescription, createdAt, updatedAt));
+                        listCategories.Add(new clsCategorieDTO(categoryID, categoryName, categoryDescription
+                            //, createdAt, updatedAt
+                            ));
 
                     }
                 }
@@ -79,10 +81,12 @@ namespace SimpleSellBooks_DataLayer.categories
                     string categoryName = (string)reader["categoryName"];
                     string? categoryDescription = reader.IsDBNull(reader.GetOrdinal("categoryDescription")) ? null :
                                             (string)reader["categoryDescription"];
-                    DateTime createdAt = (DateTime)reader["createdAt"];
-                    DateTime updatedAt = (DateTime)reader["updatedAt"];
+                    //DateTime createdAt = (DateTime)reader["createdAt"];
+                    //DateTime updatedAt = (DateTime)reader["updatedAt"];
 
-                    categorieDTO = new clsCategorieDTO(categoryID, categoryName, categoryDescription, createdAt, updatedAt);
+                    categorieDTO = new clsCategorieDTO(categoryID, categoryName, categoryDescription
+                        //, createdAt, updatedAt
+                        );
                 }
 
                 reader.Close();
