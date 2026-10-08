@@ -355,6 +355,39 @@ namespace SimpleSellBooks_DataLayer.people
             return refreshTokenIsUpdated;
         }
 
+        public static bool UpdateRefreshTokenRevokedAt(int personID)
+        {
+            bool refreshTokenIsUpdated = false;
+
+            string SP_UpdateRefreshTokenRevokedAt = "SP_UpdateRefreshTokenRevokedAt";
+
+            SqlCommand command = new SqlCommand(SP_UpdateRefreshTokenRevokedAt, connectionToDB);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@personID", personID);
+
+            try
+            {
+                connectionToDB.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    refreshTokenIsUpdated = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error : UpdateRefreshTokenRevokedAt Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+            return refreshTokenIsUpdated;
+        }
+
+
         public static bool IsPersonExists(string email)
         {
             bool isPersonExist = false;

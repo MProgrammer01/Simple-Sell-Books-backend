@@ -66,6 +66,13 @@ namespace SimpleSellBooks_BusinessLayer.people
             );
         }
 
+        public static bool UpdateRefreshTokenRevokedAt(int personID)
+        {
+            return clsPersonData.UpdateRefreshTokenRevokedAt(
+                personID
+            );
+        }
+
         public static bool IsPersonExists(string email)
         {
             return clsPersonData.IsPersonExists(email);

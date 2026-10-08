@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using SimpleSellBooks_API.DTOs.Auth;
+using SimpleSellBooks_API.helper_methods;
 using SimpleSellBooks_API.Services;
 using SimpleSellBooks_BusinessLayer.people;
 using SimpleSellBooks_BusinessLayer.sellers;
@@ -160,7 +161,7 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             return Ok(signInResp);
         }
 
-
+        [AllowAnonymous]
         [HttpPost("refresh")]
         [EnableRateLimiting("AuthPolicy")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -329,11 +330,13 @@ namespace SimpleSellBooks_API.Controllers.Authentication
             return Convert.ToBase64String(bytes);
         }
 
+        [AllowAnonymous]
         [HttpPost("signup")]
         [EnableRateLimiting("AuthPolicy")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SignUp(
             clsSellerDTO signUpDTO)
         {
@@ -391,6 +394,52 @@ namespace SimpleSellBooks_API.Controllers.Authentication
                 StatusCodes.Status201Created,
                 "Account created successfully."
             );
+        }
+
+
+        [Authorize]
+        [HttpPost("Logout")]
+        [EnableRateLimiting("AuthPolicy")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Logout()
+        {
+            int personID = clsHelperMethods.GetCurrentUserId(HttpContext) ?? 0;
+
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted personID {personID}");
+            }
+
+            bool isRevoked = clsPersonBusiness.UpdateRefreshTokenRevokedAt(personID);
+
+            if (!isRevoked)
+            {
+                await _auditService.LogAsync(
+                       SecurityEventTypeAndAction.RefreshFailed.ToString(),
+                       HttpContext,
+                       userId: personID,
+                       statusCode: StatusCodes.Status500InternalServerError,
+                       details: "Failed to update refresh token revoked at.",
+                       action: SecurityAction.Logout);
+
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError, 
+                    "Failed to logout."
+                );
+            }
+
+            await _auditService.LogAsync(
+                SecurityEventTypeAndAction.LoginSucceeded.ToString(),
+                HttpContext,
+                userId: personID,
+                statusCode: StatusCodes.Status200OK,
+                details: "Logout Success",
+                action: SecurityAction.Logout
+            );
+
+            return Ok("Logout successful.");
         }
 
     }
