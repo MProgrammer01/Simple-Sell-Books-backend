@@ -66,9 +66,14 @@ namespace SimpleSellBooks_BusinessLayer.people
             );
         }
 
-        public static bool IsPersonExistsByEmail(string email)
+        public static bool IsPersonExists(string email)
         {
-            return clsPersonData.IsPersonExistsByEmail(email);
+            return clsPersonData.IsPersonExists(email);
+        }
+
+        public static bool IsPersonExists(int personID)
+        {
+            return clsPersonData.IsPersonExists(personID);
         }
 
         public static string getPasswordHashByPersonID(int personID)
@@ -80,6 +85,11 @@ namespace SimpleSellBooks_BusinessLayer.people
         {
             newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPasswordHash);
             return clsPersonData.UpdatePasswordHash(personID, newPasswordHash);
+        }
+
+        public static bool DeletePerson(int personID)
+        {
+            return clsPersonData.DeletePerson(personID);
         }
     }
 }

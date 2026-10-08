@@ -106,7 +106,7 @@ namespace SimpleSellBooks_API.Controllers.sellers
             }
 
             // Check if email already exists
-            if (clsPersonBusiness.IsPersonExistsByEmail(newSellerDTO.email))
+            if (clsPersonBusiness.IsPersonExists(newSellerDTO.email))
             {
                 await _auditService.LogAsync(
                        SecurityEventTypeAndAction.SignUpFailed.ToString(),

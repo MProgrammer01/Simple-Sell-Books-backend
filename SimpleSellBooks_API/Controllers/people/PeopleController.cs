@@ -25,6 +25,52 @@ namespace SimpleSellBooks_API.Controllers.people
             _auditService = auditService;
         }
 
+        [HttpDelete("DeletePerson")]
+        [EnableRateLimiting("DeletePolicy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeletePerson(
+            [FromServices] IAuthorizationService authorizationService,
+            int personID)
+        {
+            if (personID < 1)
+            {
+                return BadRequest($"Not accepted ID {personID}");
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(
+                        User,
+                        personID,
+                        "OwnerOrAdmin");
+
+            if (!authResult.Succeeded)
+            {
+                await _auditService.LogAsync(
+                    SecurityEventTypeAndAction.AuthorizationDenied.ToString(),
+                    HttpContext,
+                    statusCode: StatusCodes.Status403Forbidden,
+                    details: "Person is not authorized to access this person for updating.",
+                    action: SecurityAction.AccessDenied,
+                    targetId: personID.ToString(),
+                    targetType: "Person",
+                    userId: clsHelperMethods.GetCurrentUserId(HttpContext)
+                );
+                return Forbid();
+            } // 403
+
+            if (!clsPersonBusiness.IsPersonExists(personID))
+            {
+                return NotFound($"Person with ID {personID} not found.");
+            }
+
+            if (clsPersonBusiness.DeletePerson(personID))
+            {
+                return Ok($"Person with ID {personID} has been deleted.");
+            }
+
+            return BadRequest("Failed to delete person.");
+        }
 
         [HttpPut("UpdatePasswordByPersonID")]
         [EnableRateLimiting("UpdatePolicy")]

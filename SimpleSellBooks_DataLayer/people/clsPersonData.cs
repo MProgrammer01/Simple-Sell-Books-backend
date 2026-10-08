@@ -355,7 +355,7 @@ namespace SimpleSellBooks_DataLayer.people
             return refreshTokenIsUpdated;
         }
 
-        public static bool IsPersonExistsByEmail(string email)
+        public static bool IsPersonExists(string email)
         {
             bool isPersonExist = false;
 
@@ -389,6 +389,42 @@ namespace SimpleSellBooks_DataLayer.people
 
             return isPersonExist;
         }
+
+        public static bool IsPersonExists(int personID)
+        {
+            bool isPersonExist = false;
+
+            string SP_GetSellerByID = "SP_ExistingPersonByID";
+
+            SqlCommand command = new SqlCommand(SP_GetSellerByID, connectionToDB);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@personID", personID);
+
+            try
+            {
+                connectionToDB.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    isPersonExist = true;
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error IsPersonExistsByEmail Data " + ex.Message);
+            }
+            finally
+            {
+                connectionToDB.Close();
+            }
+
+            return isPersonExist;
+        }
+
 
         public static string getPasswordHashByPersonID(int personID)
         {
